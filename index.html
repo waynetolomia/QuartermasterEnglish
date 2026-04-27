@@ -2,165 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0b1121">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>The Quartermaster's Log</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-  <style>
-    body { 
-      font-family: 'Poppins', sans-serif; 
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      /* Maritime Navy Blue Gradient */
-      background: linear-gradient(135deg, #001f3f 0%, #003366 50%, #00509e 100%);
-      color: #ffffff;
-    }
-    
-    .container {
-      /* Glassmorphism Effect */
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 40px;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-      text-align: center;
-    }
-
-    h1 { margin-top: 0; font-weight: 600; font-size: 24px; letter-spacing: 1px; margin-bottom: 25px; }
-    h1 { 
-      font-family: 'Playfair Display', serif; 
-      margin-top: 0; 
-      font-weight: 700; 
-      font-size: 28px; 
-      letter-spacing: 2px; 
-      margin-bottom: 25px; 
-    }
-    .hidden { display: none !important; }
-    
-    input, select {
-      width: 100%;
-      padding: 14px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 8px;
-      box-sizing: border-box;
-      background: rgba(255, 255, 255, 0.9);
-      font-family: 'Poppins', sans-serif;
-      font-size: 14px;
-      transition: all 0.3s ease;
-      color: #333;
-    }
-    input:focus, select:focus {
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(0, 198, 255, 0.5);
-    }
-    
-    button {
-      width: 100%;
-      padding: 14px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 8px;
-      /* Oceanic accent gradient */
-      background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
-      color: #ffffff;
-      font-family: 'Poppins', sans-serif;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0, 114, 255, 0.4);
-    }
-    
-    .secondary-btn {
-      background: transparent;
-      border: 2px solid #00c6ff;
-      color: #00c6ff;
-      padding: 12px;
-    }
-    .secondary-btn:hover { background: rgba(0, 198, 255, 0.1); }
-    
-    #auth-message { font-size: 13px; color: #ffb3b3; min-height: 20px; margin-top: 10px; }
-    .user-name-text { font-size: 20px; color: #00c6ff; font-weight: 600; word-break: break-all; }
-    .role-text { font-weight: 300; margin-bottom: 20px; }
-    .role-badge { color: #00c6ff; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-    
-    .stats-container {
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 20px;
-      display: flex;
-      justify-content: space-around;
-      font-size: 14px;
-    }
-    .stats-container p { margin: 5px 0; }
-    .daily-drop {
-      background: linear-gradient(135deg, rgba(0,198,255,0.1) 0%, rgba(0,114,255,0.1) 100%);
-      border: 1px solid rgba(0, 198, 255, 0.3);
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-    .daily-drop h3 { margin-top: 0; color: #00c6ff; }
-    
-    #daily-vocab-section {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      text-align: left;
-    }
-    .vocab-card {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      opacity: 0;
-      transform: translateY(20px);
-      animation: popIn 0.5s forwards ease-out;
-    }
-    .vocab-card:nth-child(1) { animation-delay: 0.1s; }
-    .vocab-card:nth-child(2) { animation-delay: 0.3s; }
-    .vocab-card:nth-child(3) { animation-delay: 0.5s; }
-    
-    @keyframes popIn {
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .vocab-category { display: inline-block; background: rgba(0, 198, 255, 0.2); padding: 4px 8px; border-radius: 4px; font-size: 11px; text-transform: uppercase; margin-bottom: 10px; color: #b3e5fc; font-weight: 600; }
-    .vocab-term { font-family: 'Playfair Display', serif; font-size: 22px; color: #00c6ff; margin: 0 0 10px 0; }
-    .vocab-def { font-size: 14px; margin-bottom: 10px; line-height: 1.5; }
-    .vocab-example { font-size: 13px; font-style: italic; color: #a0c4ff; margin: 0; }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="container">
     <h1>The Quartermaster's Log</h1>
+
     
     <div id="auth-section">
       <div id="login-view">
-        <input type="text" id="email" placeholder="Email address or Username" required />
-        <input type="password" id="password" placeholder="Password" required />
+        <input type="text" id="login-student-id" placeholder="Enter Student ID" required />
+        <input type="password" id="login-password" placeholder="Password" required />
         <button id="login-btn">Login</button>
         <button id="show-register-btn" class="secondary-btn">Create Account</button>
       </div>
 
       <div id="register-view" class="hidden">
-        <input type="text" id="reg-name" placeholder="Full Name" required />
         <input type="text" id="reg-student-id" placeholder="Student ID" required />
+        <input type="text" id="reg-name" placeholder="Full Name" required />
         <input type="email" id="reg-email" placeholder="Email address" required />
         <input type="password" id="reg-password" placeholder="Password" required />
+        <input type="password" id="reg-confirm-password" placeholder="Confirm Password" required />
         <select id="reg-department" required>
           <option value="" disabled selected>Select Department</option>
           <option value="DECK">Deck</option>
@@ -202,11 +71,151 @@
       </div>
       
       <div id="daily-vocab-section" class="hidden">
-        <!-- 3 Animated Cards will be injected here -->
+        <!-- Stacked Card injected here -->
+      </div>
+      
+      <div id="game-section" class="hidden">
+        <!-- Quiz injected here -->
+      </div>
+
+      <div id="student-leaderboard-section" class="admin-section" style="margin-top: 30px; text-align: left;">
+        <h3 style="text-align: center; border-bottom: none; padding-bottom: 0; margin-bottom: 15px;">Crew Rankings</h3>
+        <div class="table-container" style="max-height: 200px;">
+          <table id="student-leaderboard-table">
+            <thead><tr><th>Pos</th><th>Name</th><th>Rank</th><th>Dept</th><th>XP</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; font-size: 11px;">
+          <div><span style="color: #94a3b8; font-weight: bold; text-transform: uppercase;">Cadet</span> <span style="color: #64748b;">(0-299)</span></div>
+          <div><span style="color: #3b82f6; font-weight: bold; text-transform: uppercase;">OS / Wiper</span> <span style="color: #64748b;">(300-799)</span></div>
+          <div><span style="color: #10b981; font-weight: bold; text-transform: uppercase;">AB / Oiler</span> <span style="color: #64748b;">(800-1499)</span></div>
+          <div><span style="color: #f59e0b; font-weight: bold; text-transform: uppercase;">Bosun / Motorman</span> <span style="color: #64748b;">(1500-2499)</span></div>
+          <div><span style="color: #8b5cf6; font-weight: bold; text-transform: uppercase;">3rd Off / 3rd Eng</span> <span style="color: #64748b;">(2500-3999)</span></div>
+          <div><span style="color: #ec4899; font-weight: bold; text-transform: uppercase;">2nd Off / 2nd Eng</span> <span style="color: #64748b;">(4000-5999)</span></div>
+          <div><span style="color: #ef4444; font-weight: bold; text-transform: uppercase;">C/O / 1st Eng</span> <span style="color: #64748b;">(6000-9999)</span></div>
+          <div><span style="color: #eab308; font-weight: bold; text-transform: uppercase;">Master / C/E</span> <span style="color: #64748b;">(10000+)</span></div>
+        </div>
       </div>
 
       <p class="role-text" style="font-size: 12px; margin-bottom: 10px;">Access Level: <span id="user-role">...</span></p>
       <button id="logout-btn" class="secondary-btn">Logout</button>
+    </div>
+
+    <div id="admin-dashboard-section" class="hidden admin-panel">
+      <h2 style="text-align: center;">Captain's Quarters</h2>
+      <p class="role-text" style="text-align: center;">Access Level: <span class="role-badge">Administrator</span></p>
+
+      <div class="admin-section">
+        <h3>Crew Demographics</h3>
+        <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+          <select id="admin-chart-filter" style="margin: 0; flex: 1;">
+            <option value="department">By Department</option>
+            <option value="rank">By Rank</option>
+          </select>
+        </div>
+        <div style="position: relative; height: 250px; width: 100%;">
+          <canvas id="adminPieChart"></canvas>
+        </div>
+      </div>
+
+      <div class="admin-section">
+        <h3>Crew Rankings (Students)</h3>
+        <div class="table-container">
+          <table id="admin-students-table">
+            <thead><tr><th>Pos</th><th>Name</th><th>ID</th><th>Rank</th><th>Dept</th><th>XP</th><th>Actions</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; font-size: 11px;">
+          <div><span style="color: #94a3b8; font-weight: bold; text-transform: uppercase;">Cadet</span> <span style="color: #64748b;">(0-299)</span></div>
+          <div><span style="color: #3b82f6; font-weight: bold; text-transform: uppercase;">OS / Wiper</span> <span style="color: #64748b;">(300-799)</span></div>
+          <div><span style="color: #10b981; font-weight: bold; text-transform: uppercase;">AB / Oiler</span> <span style="color: #64748b;">(800-1499)</span></div>
+          <div><span style="color: #f59e0b; font-weight: bold; text-transform: uppercase;">Bosun / Motorman</span> <span style="color: #64748b;">(1500-2499)</span></div>
+          <div><span style="color: #8b5cf6; font-weight: bold; text-transform: uppercase;">3rd Off / 3rd Eng</span> <span style="color: #64748b;">(2500-3999)</span></div>
+          <div><span style="color: #ec4899; font-weight: bold; text-transform: uppercase;">2nd Off / 2nd Eng</span> <span style="color: #64748b;">(4000-5999)</span></div>
+          <div><span style="color: #ef4444; font-weight: bold; text-transform: uppercase;">C/O / 1st Eng</span> <span style="color: #64748b;">(6000-9999)</span></div>
+          <div><span style="color: #eab308; font-weight: bold; text-transform: uppercase;">Master / C/E</span> <span style="color: #64748b;">(10000+)</span></div>
+        </div>
+      </div>
+
+      <div class="admin-section">
+        <h3>Active Weekly Vocabulary (Crew Sets)</h3>
+        <div class="table-container">
+          <table id="admin-weekly-table">
+            <thead><tr><th>Term</th><th>Category</th><th>Frequency (Assigned)</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="admin-section">
+        <h3>Training Mode Settings</h3>
+        <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 15px; flex-wrap: wrap;">
+          <label style="color: #cbd5e1; font-size: 14px;">Assignment Mode:</label>
+          <select id="admin-mode-select" style="width: auto; margin: 0; flex: 1; min-width: 200px;">
+            <option value="random">Randomized per Student</option>
+            <option value="specific">Specific Set for All</option>
+          </select>
+          <button id="admin-save-settings-btn" style="width: auto; margin: 0; padding: 12px 24px;">Save Settings</button>
+        </div>
+        <p id="admin-settings-msg" style="color: #10b981; font-size: 13px; margin: 0; font-weight: 600;"></p>
+      </div>
+
+      <div class="admin-section">
+        <h3>Vocabulary Master List</h3>
+        <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
+          <select id="admin-filter-department" style="margin: 0; flex: 1; min-width: 150px;">
+            <option value="ALL">All Departments</option>
+            <option value="DECK">Deck</option>
+            <option value="ENGINE">Engine</option>
+            <option value="LOGISTICS">Logistics</option>
+          </select>
+          <select id="admin-filter-category" style="margin: 0; flex: 1; min-width: 200px;">
+            <option value="ALL">All Categories</option>
+          </select>
+          <select id="admin-filter-level" style="margin: 0; flex: 1; min-width: 200px;">
+            <option value="ALL">All Levels</option>
+            <option value="Cadet Level">Cadet Level</option>
+            <option value="Officer Level">Officer Level</option>
+            <option value="Master Level">Master Level</option>
+          </select>
+        </div>
+        <div class="table-container">
+          <table id="admin-vocab-table">
+            <thead><tr><th style="text-align: center;">Weekly Set</th><th>Term</th><th>Dept</th><th>Category</th><th>Level</th><th>Definition</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <button id="admin-logout-btn" class="secondary-btn">Logout</button>
+
+      <!-- Student Edit Modal -->
+      <div id="admin-edit-modal" class="hidden">
+        <div class="modal-content">
+          <h3 style="margin-top: 0; color: #00c6ff; font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 1px;">Edit Student</h3>
+          <input type="hidden" id="edit-student-id-hidden" />
+          
+          <label style="font-size: 12px; color: #94a3b8; margin-left: 5px;">Full Name</label>
+          <input type="text" id="edit-student-name" style="margin-top: 5px;" />
+          
+          <label style="font-size: 12px; color: #94a3b8; margin-left: 5px;">Department</label>
+          <select id="edit-student-dept" style="margin-top: 5px;">
+            <option value="DECK">Deck</option>
+            <option value="ENGINE">Engine</option>
+            <option value="LOGISTICS">Logistics</option>
+          </select>
+          
+          <label style="font-size: 12px; color: #94a3b8; margin-left: 5px;">Experience Points (XP)</label>
+          <input type="number" id="edit-student-xp" style="margin-top: 5px;" />
+          
+          <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button id="save-student-btn" style="margin: 0;">Save Changes</button>
+            <button id="cancel-student-btn" class="secondary-btn" style="margin: 0;">Cancel</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
