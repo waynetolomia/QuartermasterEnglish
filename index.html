@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Quartermaster's Log</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    body { 
+      font-family: 'Poppins', sans-serif; 
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      /* Maritime Navy Blue Gradient */
+      background: linear-gradient(135deg, #001f3f 0%, #003366 50%, #00509e 100%);
+      color: #ffffff;
+    }
+    
+    .container {
+      /* Glassmorphism Effect */
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 40px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+      text-align: center;
+    }
+
+    h1 { margin-top: 0; font-weight: 600; font-size: 24px; letter-spacing: 1px; margin-bottom: 25px; }
+    h1 { 
+      font-family: 'Playfair Display', serif; 
+      margin-top: 0; 
+      font-weight: 700; 
+      font-size: 28px; 
+      letter-spacing: 2px; 
+      margin-bottom: 25px; 
+    }
+    .hidden { display: none !important; }
+    
+    input, select {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      box-sizing: border-box;
+      background: rgba(255, 255, 255, 0.9);
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      color: #333;
+    }
+    input:focus, select:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 198, 255, 0.5);
+    }
+    
+    button {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      /* Oceanic accent gradient */
+      background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+      color: #ffffff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 114, 255, 0.4);
+    }
+    
+    .secondary-btn {
+      background: transparent;
+      border: 2px solid #00c6ff;
+      color: #00c6ff;
+      padding: 12px;
+    }
+    .secondary-btn:hover { background: rgba(0, 198, 255, 0.1); }
+    
+    #auth-message { font-size: 13px; color: #ffb3b3; min-height: 20px; margin-top: 10px; }
+    .user-name-text { font-size: 20px; color: #00c6ff; font-weight: 600; word-break: break-all; }
+    .role-text { font-weight: 300; margin-bottom: 20px; }
+    .role-badge { color: #00c6ff; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+    
+    .stats-container {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-around;
+      font-size: 14px;
+    }
+    .stats-container p { margin: 5px 0; }
+    .daily-drop {
+      background: linear-gradient(135deg, rgba(0,198,255,0.1) 0%, rgba(0,114,255,0.1) 100%);
+      border: 1px solid rgba(0, 198, 255, 0.3);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .daily-drop h3 { margin-top: 0; color: #00c6ff; }
+    
+    #daily-vocab-section {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      text-align: left;
+    }
+    .vocab-card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: popIn 0.5s forwards ease-out;
+    }
+    .vocab-card:nth-child(1) { animation-delay: 0.1s; }
+    .vocab-card:nth-child(2) { animation-delay: 0.3s; }
+    .vocab-card:nth-child(3) { animation-delay: 0.5s; }
+    
+    @keyframes popIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .vocab-category { display: inline-block; background: rgba(0, 198, 255, 0.2); padding: 4px 8px; border-radius: 4px; font-size: 11px; text-transform: uppercase; margin-bottom: 10px; color: #b3e5fc; font-weight: 600; }
+    .vocab-term { font-family: 'Playfair Display', serif; font-size: 22px; color: #00c6ff; margin: 0 0 10px 0; }
+    .vocab-def { font-size: 14px; margin-bottom: 10px; line-height: 1.5; }
+    .vocab-example { font-size: 13px; font-style: italic; color: #a0c4ff; margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>The Quartermaster's Log</h1>
+    
+    <div id="auth-section">
+      <div id="login-view">
+        <input type="text" id="email" placeholder="Email address or Username" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <button id="login-btn">Login</button>
+        <button id="show-register-btn" class="secondary-btn">Create Account</button>
+      </div>
+
+      <div id="register-view" class="hidden">
+        <input type="text" id="reg-name" placeholder="Full Name" required />
+        <input type="text" id="reg-student-id" placeholder="Student ID" required />
+        <input type="email" id="reg-email" placeholder="Email address" required />
+        <input type="password" id="reg-password" placeholder="Password" required />
+        <select id="reg-department" required>
+          <option value="" disabled selected>Select Department</option>
+          <option value="DECK">Deck</option>
+          <option value="ENGINE">Engine</option>
+          <option value="LOGISTICS">Logistics</option>
+        </select>
+        <button id="register-btn">Register</button>
+        <button id="show-login-btn" class="secondary-btn">Back to Login</button>
+      </div>
+      <p id="auth-message"></p>
+    </div>
+
+    <div id="dashboard-section" class="hidden">
+      <h2>Welcome Aboard,<br><span id="user-name" class="user-name-text"></span></h2>
+      
+      <div class="stats-container">
+        <div>
+          <p>Dept</p>
+          <strong id="user-department" class="role-badge">...</strong>
+        </div>
+        <div>
+          <p>Rank</p>
+          <strong id="user-rank" class="role-badge">Deckhand</strong>
+        </div>
+        <div>
+          <p>Streak</p>
+          <strong id="user-streak" class="role-badge">0 Days</strong>
+        </div>
+        <div>
+          <p>XP</p>
+          <strong id="user-xp" class="role-badge">0</strong>
+        </div>
+      </div>
+      
+      <div id="daily-drop-section" class="daily-drop">
+        <h3>The Daily Drop</h3>
+        <p>Your 3 new maritime terms are ready.</p>
+        <button id="start-daily-btn">Start Daily 3</button>
+      </div>
+      
+      <div id="daily-vocab-section" class="hidden">
+        <!-- 3 Animated Cards will be injected here -->
+      </div>
+
+      <p class="role-text" style="font-size: 12px; margin-bottom: 10px;">Access Level: <span id="user-role">...</span></p>
+      <button id="logout-btn" class="secondary-btn">Logout</button>
+    </div>
+  </div>
+
+  <script type="module" src="./auth.js"></script>
+</body>
+</html>

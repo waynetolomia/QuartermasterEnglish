@@ -1,0 +1,596 @@
+[
+  {
+    "term": "Starboard",
+    "definition": "The right-hand side of a vessel when facing forward.",
+    "example": "The lookout spotted a buoy on the starboard bow.",
+    "category": "Navigation"
+  },
+  {
+    "term": "Port",
+    "definition": "The left-hand side of a vessel when facing forward.",
+    "example": "We will berth on the port side.",
+    "category": "Navigation"
+  },
+  {
+    "term": "Bow",
+    "definition": "The forward part of the hull of a ship.",
+    "example": "Waves crashed against the bow as we headed into the storm.",
+    "category": "Ship Structure"
+  },
+  {
+    "term": "Stern",
+    "definition": "The rear or aft-most part of a ship.",
+    "example": "The ship's wake trailed out behind the stern.",
+    "category": "Ship Structure"
+  },
+  {
+    "term": "Draft",
+    "definition": "The vertical distance between the waterline and the bottom of the hull (keel).",
+    "example": "The vessel's draft is too deep to enter the shallow canal.",
+    "category": "Stability"
+  },
+  {
+    "term": "Keel",
+    "definition": "The main structural member along the bottom of a ship's hull.",
+    "example": "The vessel was designed with a flat keel for shallow waters.",
+    "category": "Ship Structure"
+  },
+  {
+    "term": "Beam",
+    "definition": "The width of a ship at its widest point.",
+    "example": "The ship has a beam of 32 meters, allowing it to pass through the locks.",
+    "category": "Ship Structure"
+  },
+  {
+    "term": "Freeboard",
+    "definition": "The distance from the waterline to the upper deck level.",
+    "example": "The heavy cargo reduced our freeboard significantly.",
+    "category": "Stability"
+  },
+  {
+    "term": "Bulkhead",
+    "definition": "An upright wall within the hull of a ship that separates compartments.",
+    "example": "Close the watertight doors in the main bulkhead.",
+    "category": "Ship Structure"
+  },
+  {
+    "term": "Deck",
+    "definition": "A permanent covering over a compartment or a hull of a ship.",
+    "example": "All hands were ordered to the main deck.",
+    "category": "Ship Structure"
+  },
+  {
+    "term": "Moor",
+    "definition": "To secure a ship in a particular place by means of wires or ropes.",
+    "example": "The captain gave orders to moor the vessel at Pier 4.",
+    "category": "Deck Operations"
+  },
+  {
+    "term": "Anchor",
+    "definition": "A heavy object attached to a rope or chain and used to moor a vessel to the sea bottom.",
+    "example": "Drop the anchor when we reach the designated anchorage.",
+    "category": "Deck Operations"
+  },
+  {
+    "term": "Windlass",
+    "definition": "A machine used on ships to hoist or lower the anchor.",
+    "example": "Engage the windlass to heave up the port anchor.",
+    "category": "Deck Machinery"
+  },
+  {
+    "term": "Capstan",
+    "definition": "A revolving cylinder on a vertical axis used for winding in ropes or cables.",
+    "example": "Take three turns on the capstan with the mooring line.",
+    "category": "Deck Machinery"
+  },
+  {
+    "term": "Bollard",
+    "definition": "A short, thick post on the deck or dock to which a ship's mooring lines are secured.",
+    "example": "Make fast the forward spring line to the second bollard.",
+    "category": "Deck Operations"
+  },
+  {
+    "term": "Cleat",
+    "definition": "A T-shaped piece of metal or wood on a boat to which ropes are attached.",
+    "example": "Secure the halyard to the cleat.",
+    "category": "Deck Operations"
+  },
+  {
+    "term": "Fairlead",
+    "definition": "A device to guide a line, rope or cable around an object, out of the way or to stop it from moving laterally.",
+    "example": "Pass the heaving line through the fairlead.",
+    "category": "Deck Operations"
+  },
+  {
+    "term": "Hawser",
+    "definition": "A thick cable or rope used in mooring or towing a ship.",
+    "example": "The tugboat passed its hawser to our forecastle.",
+    "category": "Deck Operations"
+  },
+  {
+    "term": "Fender",
+    "definition": "A bumper used to absorb the kinetic energy of a boat or vessel berthing.",
+    "example": "Deploy the fenders on the port side before we come alongside.",
+    "category": "Deck Operations"
+  },
+  {
+    "term": "Gangway",
+    "definition": "A raised platform or walkway providing a passage onto a ship.",
+    "example": "The pilot boarded the vessel via the rigged gangway.",
+    "category": "Deck Operations"
+  },
+  {
+    "term": "Leeward",
+    "definition": "The side of the ship that is away from the wind.",
+    "example": "The crew gathered on the leeward side to avoid the spray.",
+    "category": "Weather"
+  },
+  {
+    "term": "Windward",
+    "definition": "The side or direction from which the wind is blowing.",
+    "example": "Approach the survivor from the windward side.",
+    "category": "Weather"
+  },
+  {
+    "term": "Heave To",
+    "definition": "To stop a ship by turning its head into the wind.",
+    "example": "The vessel had to heave to during the peak of the storm.",
+    "category": "Maneuvering"
+  },
+  {
+    "term": "Pitch",
+    "definition": "The up and down motion of a ship's bow and stern.",
+    "example": "The heavy seas caused the ship to pitch violently.",
+    "category": "Ship Dynamics"
+  },
+  {
+    "term": "Roll",
+    "definition": "The side-to-side motion of a ship.",
+    "example": "Ensure all loose gear is secured to prevent damage during a heavy roll.",
+    "category": "Ship Dynamics"
+  },
+  {
+    "term": "Yaw",
+    "definition": "The side-to-side swinging of a ship's bow off its course.",
+    "example": "Following seas caused the vessel to yaw significantly.",
+    "category": "Ship Dynamics"
+  },
+  {
+    "term": "Surge",
+    "definition": "The forward and backward motion of a ship.",
+    "example": "The surge of the vessel made cargo operations difficult.",
+    "category": "Ship Dynamics"
+  },
+  {
+    "term": "Sway",
+    "definition": "The lateral bodily movement of a ship.",
+    "example": "The tug applied pressure to control the ship's sway.",
+    "category": "Ship Dynamics"
+  },
+  {
+    "term": "Heave",
+    "definition": "The vertical up and down bodily motion of a ship.",
+    "example": "The ship's heave in the swell made boarding the pilot dangerous.",
+    "category": "Ship Dynamics"
+  },
+  {
+    "term": "List",
+    "definition": "A continuous lean to one side caused by an imbalance of weight.",
+    "example": "Uneven cargo loading caused the ship to list five degrees to starboard.",
+    "category": "Stability"
+  },
+  {
+    "term": "Loll",
+    "definition": "An unstable condition where a ship rests at an angle due to a negative metacentric height.",
+    "example": "The angle of loll must be corrected by lowering the center of gravity.",
+    "category": "Stability"
+  },
+  {
+    "term": "Trim",
+    "definition": "The difference between the forward and aft draft of a vessel.",
+    "example": "The captain adjusted the ballast to maintain an even keel trim.",
+    "category": "Stability"
+  },
+  {
+    "term": "Buoyancy",
+    "definition": "The upward force exerted by water that keeps the ship afloat.",
+    "example": "Damage to the hull compromised the ship's reserve buoyancy.",
+    "category": "Stability"
+  },
+  {
+    "term": "Center of Gravity",
+    "definition": "The point at which the entire weight of the ship and its contents is considered to act vertically downward.",
+    "example": "Loading heavy cargo on the upper deck raises the center of gravity.",
+    "category": "Stability"
+  },
+  {
+    "term": "Center of Buoyancy",
+    "definition": "The geometric center of the ship's underwater volume.",
+    "example": "As the ship rolls, the center of buoyancy shifts to the lower side.",
+    "category": "Stability"
+  },
+  {
+    "term": "Metacenter",
+    "definition": "The intersection point of vertical lines through the center of buoyancy when the ship is upright and when it is heeled.",
+    "example": "A high metacenter ensures a stiff ship that rolls quickly.",
+    "category": "Stability"
+  },
+  {
+    "term": "Righting Arm",
+    "definition": "The horizontal distance between the center of gravity and the vertical line of buoyancy.",
+    "example": "The righting arm determines the ship's ability to return to an upright position.",
+    "category": "Stability"
+  },
+  {
+    "term": "Plimsoll Mark",
+    "definition": "A mark on a ship's side indicating the maximum depth to which the vessel may be safely loaded.",
+    "example": "Ensure the water does not submerge the Plimsoll Mark.",
+    "category": "Stability"
+  },
+  {
+    "term": "Load Line",
+    "definition": "Lines painted on the side of a ship marking the maximum safe draft for different seasons and waters.",
+    "example": "We are loading to the tropical fresh water load line.",
+    "category": "Stability"
+  },
+  {
+    "term": "Scuppers",
+    "definition": "Openings in the side of a ship at deck level to allow water to drain away.",
+    "example": "Clear the scuppers so the deck water can drain freely.",
+    "category": "Ship Structure"
+  },
+  {
+    "term": "Aft",
+    "definition": "Toward, at, or near the stern of a ship.",
+    "example": "The mooring team proceeded aft to prepare the lines.",
+    "category": "Directions"
+  },
+  {
+    "term": "Forward",
+    "definition": "Toward the bow of the ship.",
+    "example": "The lookout is stationed forward on the forecastle.",
+    "category": "Directions"
+  },
+  {
+    "term": "Amidships",
+    "definition": "In or toward the middle part of a ship.",
+    "example": "Rudder amidships!",
+    "category": "Directions"
+  },
+  {
+    "term": "Aloft",
+    "definition": "Up in the rigging or mast of a ship.",
+    "example": "The radar technician went aloft to repair the scanner.",
+    "category": "Directions"
+  },
+  {
+    "term": "Below",
+    "definition": "Beneath the main deck.",
+    "example": "The off-duty crew went below to rest.",
+    "category": "Directions"
+  },
+  {
+    "term": "Bridge",
+    "definition": "The room or platform from which a ship can be commanded.",
+    "example": "The captain is on the bridge monitoring the radar.",
+    "category": "Ship Spaces"
+  },
+  {
+    "term": "Galley",
+    "definition": "The kitchen on a ship.",
+    "example": "The chief cook is preparing lunch in the galley.",
+    "category": "Ship Spaces"
+  },
+  {
+    "term": "Mess",
+    "definition": "The dining area for the crew on a ship.",
+    "example": "Crew members gathered in the mess for the safety meeting.",
+    "category": "Ship Spaces"
+  },
+  {
+    "term": "Berth",
+    "definition": "A bed or bunk on a ship; also a place where a ship is moored.",
+    "example": "He returned to his berth after a long watch.",
+    "category": "Ship Spaces"
+  },
+  {
+    "term": "Cabin",
+    "definition": "A private room or compartment on a ship.",
+    "example": "The Chief Engineer is resting in his cabin.",
+    "category": "Ship Spaces"
+  },
+  {
+    "term": "Helm",
+    "definition": "The steering wheel or tiller of a ship.",
+    "example": "The helmsman took the helm to execute the turn.",
+    "category": "Navigation"
+  },
+  {
+    "term": "Rudder",
+    "definition": "A flat piece hinged vertically near the stern of a ship for steering.",
+    "example": "Put the rudder hard to port.",
+    "category": "Navigation"
+  },
+  {
+    "term": "Propeller",
+    "definition": "A mechanical device with blades that rotates to push a ship through water.",
+    "example": "The ship shuddered as the propeller surfaced in the rough sea.",
+    "category": "Engine Room"
+  },
+  {
+    "term": "Thruster",
+    "definition": "A propulsion device fitted in the bow or stern to improve maneuverability.",
+    "example": "Use the bow thruster to push the head away from the dock.",
+    "category": "Maneuvering"
+  },
+  {
+    "term": "Binnacle",
+    "definition": "A housing that encloses a ship's compass.",
+    "example": "Check the heading on the magnetic compass in the binnacle.",
+    "category": "Navigation"
+  },
+  {
+    "term": "Compass",
+    "definition": "An instrument containing a magnetized pointer that shows the direction of magnetic north.",
+    "example": "Steer a compass course of 180 degrees.",
+    "category": "Navigation"
+  },
+  {
+    "term": "Radar",
+    "definition": "A system for detecting the presence, direction, distance, and speed of objects using radio waves.",
+    "example": "The radar showed a squall line approaching from the west.",
+    "category": "Navigation"
+  },
+  {
+    "term": "ECDIS",
+    "definition": "Electronic Chart Display and Information System, used for digital navigation.",
+    "example": "The route was plotted and checked on the ECDIS.",
+    "category": "Navigation"
+  },
+  {
+    "term": "AIS",
+    "definition": "Automatic Identification System, used to track and identify ships.",
+    "example": "The AIS showed the target vessel's name and speed.",
+    "category": "Navigation"
+  },
+  {
+    "term": "VHF",
+    "definition": "Very High Frequency radio, standard for short-range marine communication.",
+    "example": "Call the port control on VHF channel 12.",
+    "category": "Communication"
+  },
+  {
+    "term": "Mayday",
+    "definition": "An international radio distress signal used in life-threatening emergencies.",
+    "example": "The sinking vessel broadcast a Mayday distress call.",
+    "category": "Communication"
+  },
+  {
+    "term": "Pan-Pan",
+    "definition": "An urgency signal used when a situation is urgent but not immediately life-threatening.",
+    "example": "The ship broadcast a Pan-Pan after losing engine power in the channel.",
+    "category": "Communication"
+  },
+  {
+    "term": "Securite",
+    "definition": "A safety signal used to broadcast navigational warnings or meteorological forecasts.",
+    "example": "The coast guard issued a Securite regarding floating debris.",
+    "category": "Communication"
+  },
+  {
+    "term": "EPIRB",
+    "definition": "Emergency Position Indicating Radio Beacon, used to alert search and rescue services.",
+    "example": "The EPIRB deployed automatically when the vessel sank.",
+    "category": "Safety"
+  },
+  {
+    "term": "SART",
+    "definition": "Search and Rescue Transponder, designed to show up on rescue radar displays.",
+    "example": "Take the SART into the liferaft before abandoning ship.",
+    "category": "Safety"
+  },
+  {
+    "term": "Muster Station",
+    "definition": "A designated area where crew and passengers assemble in an emergency.",
+    "example": "All crew members proceed immediately to your muster station.",
+    "category": "Safety"
+  },
+  {
+    "term": "Lifeboat",
+    "definition": "A small rigid boat kept on a ship for use in an emergency abandonment.",
+    "example": "The crew practiced lowering the starboard lifeboat during the drill.",
+    "category": "Safety"
+  },
+  {
+    "term": "Liferaft",
+    "definition": "An inflatable raft carried on a ship for emergency survival.",
+    "example": "Ensure the liferaft painter is securely attached to the weak link.",
+    "category": "Safety"
+  },
+  {
+    "term": "Davit",
+    "definition": "A small crane on board a ship, used especially for suspending or lowering lifeboats.",
+    "example": "Swing out the davit to prepare the lifeboat for launching.",
+    "category": "Deck Machinery"
+  },
+  {
+    "term": "Immersion Suit",
+    "definition": "A dry suit designed to protect the wearer from hypothermia in cold water.",
+    "example": "You have two minutes to don your immersion suit during the drill.",
+    "category": "Safety"
+  },
+  {
+    "term": "Cargo Hold",
+    "definition": "The space in a ship for storing cargo.",
+    "example": "The grain was loaded directly into the forward cargo hold.",
+    "category": "Cargo Operations"
+  },
+  {
+    "term": "Hatch",
+    "definition": "An opening in a ship's deck for access to a cargo hold or lower compartment.",
+    "example": "Secure the hatch covers before we put to sea.",
+    "category": "Ship Structure"
+  },
+  {
+    "term": "Crane",
+    "definition": "A machine for lifting heavy heavy loads and moving them.",
+    "example": "The ship's crane was used to discharge the heavy machinery.",
+    "category": "Cargo Operations"
+  },
+  {
+    "term": "Derrick",
+    "definition": "A lifting device composed of a mast or pole and a boom, used for handling cargo.",
+    "example": "Rig the derrick for loading operations on the port side.",
+    "category": "Cargo Operations"
+  },
+  {
+    "term": "Sling",
+    "definition": "A loop of rope or chain used to hoist cargo.",
+    "example": "Attach the wire sling to the pallets.",
+    "category": "Cargo Operations"
+  },
+  {
+    "term": "Dunnage",
+    "definition": "Pieces of wood or other material used to keep cargo securely in place and prevent damage.",
+    "example": "Lay down proper dunnage before stowing the steel coils.",
+    "category": "Cargo Operations"
+  },
+  {
+    "term": "Lashing",
+    "definition": "Ropes, chains, or straps used to secure cargo against movement.",
+    "example": "Check the tension on the container lashings daily.",
+    "category": "Cargo Operations"
+  },
+  {
+    "term": "Twistlock",
+    "definition": "A standard connector used to lock shipping containers together.",
+    "example": "Insert the twistlocks into the corner castings before loading the next tier.",
+    "category": "Cargo Operations"
+  },
+  {
+    "term": "TEU",
+    "definition": "Twenty-foot Equivalent Unit, the standard measure for container ships.",
+    "example": "This new vessel has a capacity of over 20,000 TEU.",
+    "category": "Cargo Operations"
+  },
+  {
+    "term": "RO-RO",
+    "definition": "Roll-on/Roll-off, a type of ship designed to carry wheeled cargo.",
+    "example": "The cars were driven directly onto the RO-RO deck.",
+    "category": "Cargo Operations"
+  },
+  {
+    "term": "Engine Room",
+    "definition": "The compartment where the ship's main machinery is located.",
+    "example": "The duty engineer is making his rounds in the engine room.",
+    "category": "Ship Spaces"
+  },
+  {
+    "term": "Bilge",
+    "definition": "The lowest inner part of a ship's hull where water collects.",
+    "example": "Pump out the engine room bilge holding tank.",
+    "category": "Ship Structure"
+  },
+  {
+    "term": "Bunker",
+    "definition": "The compartments or tanks on a ship that store fuel.",
+    "example": "We need to take on heavy fuel oil into the bunker tanks in Singapore.",
+    "category": "Ship Spaces"
+  },
+  {
+    "term": "Ballast",
+    "definition": "Water added to tanks to improve the stability or adjust the draft of a ship.",
+    "example": "Discharge the port ballast tanks to correct the list.",
+    "category": "Stability"
+  },
+  {
+    "term": "Manifold",
+    "definition": "A pipe with several openings for making multiple connections, typically for loading liquid cargo.",
+    "example": "Connect the loading arms to the port manifold.",
+    "category": "Cargo Operations"
+  },
+  {
+    "term": "Valve",
+    "definition": "A device that controls the flow of a fluid through a pipe.",
+    "example": "Open the crossover valve slowly to avoid a surge in pressure.",
+    "category": "Engine Room"
+  },
+  {
+    "term": "Pump",
+    "definition": "A mechanical device used to move fluids.",
+    "example": "Start the main ballast pump to begin deballasting.",
+    "category": "Engine Room"
+  },
+  {
+    "term": "Generator",
+    "definition": "A machine that converts mechanical energy into electricity.",
+    "example": "Start up the emergency generator for the weekly test.",
+    "category": "Engine Room"
+  },
+  {
+    "term": "Boiler",
+    "definition": "A closed vessel in which water is heated to generate steam.",
+    "example": "The auxiliary boiler is providing steam for the cargo heating coils.",
+    "category": "Engine Room"
+  },
+  {
+    "term": "Compressor",
+    "definition": "A machine used to supply compressed air for engine starting or tools.",
+    "example": "The main air compressor filled the starting air receivers.",
+    "category": "Engine Room"
+  },
+  {
+    "term": "Pilot",
+    "definition": "A local expert who boards a ship to guide it through dangerous or congested waters.",
+    "example": "The harbor pilot will board at the outer buoy.",
+    "category": "Navigation"
+  },
+  {
+    "term": "Tug",
+    "definition": "A powerful small boat designed to pull or push larger ships.",
+    "example": "Make fast the forward tug to assist with berthing.",
+    "category": "Maneuvering"
+  },
+  {
+    "term": "Draft Mark",
+    "definition": "Numbers painted on the bow and stern used to visually read a ship's draft.",
+    "example": "Read the draft marks on the starboard side to confirm our depth.",
+    "category": "Stability"
+  },
+  {
+    "term": "Sounding",
+    "definition": "The process of measuring the depth of water in a tank or beneath the ship.",
+    "example": "Take a sounding of the fuel tank to calculate the remaining volume.",
+    "category": "Operations"
+  },
+  {
+    "term": "Ullage",
+    "definition": "The unfilled space in a tank, measured from the surface of the liquid to the top of the tank.",
+    "example": "Stop loading when the ullage reaches two meters.",
+    "category": "Operations"
+  },
+  {
+    "term": "Waypoint",
+    "definition": "A set of coordinates that identify a point in physical space, used for navigation.",
+    "example": "Alter course to 090 degrees when we reach the next waypoint.",
+    "category": "Navigation"
+  },
+  {
+    "term": "Bearing",
+    "definition": "The horizontal direction of one object from another, expressed in degrees.",
+    "example": "The lighthouse has a bearing of 045 degrees from our position.",
+    "category": "Navigation"
+  },
+  {
+    "term": "Heading",
+    "definition": "The direction in which a ship's bow is pointing.",
+    "example": "Our current heading is true north.",
+    "category": "Navigation"
+  },
+  {
+    "term": "Course",
+    "definition": "The intended direction of travel of a vessel.",
+    "example": "The navigator laid out a course that avoids the shallow reefs.",
+    "category": "Navigation"
+  }
+]
