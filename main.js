@@ -15,6 +15,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// Google Custom Search API Configuration
+// Replace these with your actual keys from Google Cloud Console & Programmable Search Engine
+const GOOGLE_API_KEY = "YOUR_GOOGLE_API_KEY";
+const GOOGLE_CX = "YOUR_SEARCH_ENGINE_ID";
+
 const loginStudentIdInput = document.getElementById("login-student-id");
 const loginPasswordInput = document.getElementById("login-password");
 const loginBtn = document.getElementById("login-btn");
@@ -22,9 +27,13 @@ const registerBtn = document.getElementById("register-btn");
 const logoutBtn = document.getElementById("logout-btn");
 const authMessage = document.getElementById("auth-message");
 const authSection = document.getElementById("auth-section");
-const dashboardSection = document.getElementById("dashboard-section");
+const dashboardContent = document.getElementById("dashboard-content");
 const userNameSpan = document.getElementById("user-name");
 const userRoleSpan = document.getElementById("user-role");
+const userMenuBtn = document.getElementById("user-menu-btn");
+const userDropdownMenu = document.getElementById("user-dropdown-menu");
+const userMenuWrapper = document.getElementById("user-menu-wrapper");
+const menuBackProfileBtn = document.getElementById("menu-back-profile-btn");
 
 const loginView = document.getElementById("login-view");
 const registerView = document.getElementById("register-view");
@@ -77,6 +86,45 @@ const deptCategories = {
   LOGISTICS: ["Cargo Operations", "Operations", "Ship Spaces"]
 };
 
+// Sound Effects Synthesizer (No external assets required)
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playSound(type) {
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const osc = audioCtx.createOscillator();
+  const gainNode = audioCtx.createGain();
+  osc.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+  
+  if (type === 'swipe') {
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+  } else if (type === 'match') {
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+    osc.frequency.setValueAtTime(800, audioCtx.currentTime + 0.1);
+    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+  } else if (type === 'error') {
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.2);
+    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+  } else if (type === 'levelup') {
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+    gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.8);
+  }
+}
+
 // Calculate word XP value based on Level
 function getWordXp(level) {
   if (level === "Master Level") return 30;
@@ -126,6 +174,119 @@ function getRankColor(rank) {
     "Supercargo": "#eab308"
   };
   return colors[rank] || "#cbd5e1";
+}
+
+// Function to get a random image based on the vocabulary category
+function getRandomCategoryImage(category) {
+  // Replace with your actual image paths
+  const categoryImages = {
+    "Navigation": [
+      "./assets/images/navigation_1.jpg",
+      "./assets/images/navigation_2.jpg",
+      "./assets/images/navigation_3.jpg"
+    ],
+    "Deck Operations": [
+      "./assets/images/deck_operations_1.jpg",
+      "./assets/images/deck_operations_2.jpg",
+      "./assets/images/deck_operations_3.jpg"
+    ],
+    "Deck Machinery": [
+      "./assets/images/deck_machinery_1.jpg",
+      "./assets/images/deck_machinery_2.jpg",
+      "./assets/images/deck_machinery_3.jpg"
+    ],
+    "Maneuvering": [
+      "./assets/images/maneuvering_1.jpg",
+      "./assets/images/maneuvering_2.jpg",
+      "./assets/images/maneuvering_3.jpg"
+    ],
+    "Ship Dynamics": [
+      "./assets/images/ship_dynamics_1.jpg",
+      "./assets/images/ship_dynamics_2.jpg",
+      "./assets/images/ship_dynamics_3.jpg"
+    ],
+    "Stability": [
+      "./assets/images/stability_1.jpg",
+      "./assets/images/stability_2.jpg",
+      "./assets/images/stability_3.jpg"
+    ],
+    "Weather": [
+      "./assets/images/weather_1.jpg",
+      "./assets/images/weather_2.jpg",
+      "./assets/images/weather_3.jpg"
+    ],
+    "Directions": [
+      "./assets/images/directions_1.jpg",
+      "./assets/images/directions_2.jpg",
+      "./assets/images/directions_3.jpg"
+    ],
+    "Communication": [
+      "./assets/images/communication_1.jpg",
+      "./assets/images/communication_2.jpg",
+      "./assets/images/communication_3.jpg"
+    ],
+    "Safety": [
+      "./assets/images/safety_1.jpg",
+      "./assets/images/safety_2.jpg",
+      "./assets/images/safety_3.jpg"
+    ],
+    "Engine Room": [
+      "./assets/images/engine_room_1.jpg",
+      "./assets/images/engine_room_2.jpg",
+      "./assets/images/engine_room_3.jpg"
+    ],
+    "Ship Structure": [
+      "./assets/images/ship_structure_1.jpg",
+      "./assets/images/ship_structure_2.jpg",
+      "./assets/images/ship_structure_3.jpg"
+    ],
+    "Cargo Operations": [
+      "./assets/images/cargo_operations_1.jpg",
+      "./assets/images/cargo_operations_2.jpg",
+      "./assets/images/cargo_operations_3.jpg"
+    ],
+    "Operations": [
+      "./assets/images/operations_1.jpg",
+      "./assets/images/operations_2.jpg",
+      "./assets/images/operations_3.jpg"
+    ],
+    "Ship Spaces": [
+      "./assets/images/ship_spaces_1.jpg",
+      "./assets/images/ship_spaces_2.jpg",
+      "./assets/images/ship_spaces_3.jpg"
+    ]
+  };
+
+  if (categoryImages[category] && categoryImages[category].length > 0) {
+    const images = categoryImages[category];
+    return images[Math.floor(Math.random() * images.length)];
+  }
+
+  // Fallback: Generate a random generic SVG placeholder if category images aren't defined
+  const index = Math.floor(Math.random() * 3) + 1;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400"><rect width="100%" height="100%" fill="#0f172a"/><text x="50%" y="50%" font-family="sans-serif" font-size="28" fill="#64748b" text-anchor="middle" dominant-baseline="middle">${category} - Sample ${index}</text></svg>`;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
+// User Menu Toggle Logic
+if (userMenuBtn) {
+  userMenuBtn.addEventListener("click", () => {
+    userDropdownMenu.classList.toggle("hidden");
+  });
+
+  // Close menu when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!userMenuBtn.contains(e.target) && !userDropdownMenu.contains(e.target)) {
+      userDropdownMenu.classList.add("hidden");
+    }
+  });
+}
+
+if (menuBackProfileBtn) {
+  menuBackProfileBtn.addEventListener("click", () => {
+    userDropdownMenu.classList.add("hidden");
+    loadDashboard(currentUserData);
+  });
 }
 
 showRegisterBtn.addEventListener("click", () => {
@@ -363,11 +524,25 @@ startDailyBtn.addEventListener("click", async () => {
     const setStartIdx = setsCompleted * 3;
     
     // Map the terms from the weekly pool back to full vocabulary objects
-    const currentSetTerms = weeklyWords.slice(setStartIdx, setStartIdx + 3);
-    dailyWords = currentSetTerms.map(term => allVocabsList.find(w => w.term === term) || allVocabsList[0]);
+    let scheduledTerms = weeklyWords.slice(setStartIdx, setStartIdx + 3);
+    
+    // Spaced Repetition System (SRS): Inject review words
+    let reviewWords = currentUserData.reviewWords || [];
+    let finalTerms = [];
+    let rCount = 0;
+    for(let rTerm of reviewWords) {
+      if(rCount < 2 && !scheduledTerms.includes(rTerm)) {
+        finalTerms.push(rTerm);
+        rCount++;
+      }
+    }
+    for(let sTerm of scheduledTerms) {
+      if(finalTerms.length < 3 && !finalTerms.includes(sTerm)) finalTerms.push(sTerm);
+    }
+    
+    dailyWords = finalTerms.map(term => allVocabsList.find(w => w.term === term) || allVocabsList[0]);
 
-    // 4. Render the new vocabulary challenge UI
-    renderVocabChallenge();
+    renderVocabChallenge(); 
 
   } catch (error) {
     console.error("Error starting vocabulary challenge:", error);
@@ -377,20 +552,14 @@ startDailyBtn.addEventListener("click", async () => {
 });
 
 function renderVocabChallenge() {
-  dailyDropSection.classList.add("hidden");
+  dashboardContent.classList.add("hidden");
+  if (dailyDropSection) dailyDropSection.classList.add("hidden");
+  if (userMenuWrapper) userMenuWrapper.classList.add("hidden"); // Fully hides the student profile header
   dailyVocabSection.classList.remove("hidden");
   gameSection.classList.add("hidden");
-  const leaderboardSection = document.getElementById("student-leaderboard-section");
-  if (leaderboardSection) leaderboardSection.classList.add("hidden");
-  
-  // Expand container to fit the game
-  const container = document.querySelector('.container');
-  container.style.maxWidth = '1200px';
-  container.style.padding = window.innerWidth <= 480 ? '20px 10px' : '40px 20px';
-  container.style.background = 'transparent';
-  container.style.border = 'none';
-  container.style.backdropFilter = 'none';
-  container.style.boxShadow = 'none';
+
+  if (menuBackProfileBtn) menuBackProfileBtn.classList.remove("hidden");
+
   
   const themeConfig = {
     DECK: { hex: '#00c6ff', shadow: 'rgba(0, 198, 255, 0.4)' },
@@ -404,9 +573,6 @@ function renderVocabChallenge() {
     const wordLevel = word.level || 'Cadet Level';
     const wordXp = getWordXp(wordLevel);
     const zIndex = dailyWords.length - index;
-    
-    // Using loremflickr for dynamic, keyword-based images as a reliable alternative. Adding a lock to get a consistent image.
-    const imageUrl = `https://loremflickr.com/600/400/maritime,ship,${encodeURIComponent(word.term)}?lock=${index}`;
 
     return `
       <div class="swipe-card" data-index="${index}" style="z-index: ${zIndex}; border-color: ${theme.hex}; box-shadow: 0 0 20px ${theme.shadow};">
@@ -416,7 +582,7 @@ function renderVocabChallenge() {
         </div>
         
         <div class="vocab-image-container" style="border-color: ${theme.hex};">
-          <img src="${imageUrl}" alt="${word.term}" class="vocab-image" draggable="false"/>
+          <img src="${getRandomCategoryImage(word.category)}" id="card-img-${index}" alt="${word.term}" class="vocab-image" draggable="false"/>
         </div>
         
         <div class="card-content-wrapper">
@@ -486,13 +652,6 @@ function renderVocabChallenge() {
   });
   
   document.getElementById("back-to-profile-btn-vocab").addEventListener("click", () => {
-    const container = document.querySelector('.container');
-    container.style.maxWidth = '';
-    container.style.padding = '';
-    container.style.background = '';
-    container.style.border = '';
-    container.style.backdropFilter = '';
-    container.style.boxShadow = '';
     loadDashboard(currentUserData);
   });
 
@@ -532,9 +691,16 @@ function initSwipeLogic() {
       if (e.target.tagName.toLowerCase() === 'button') return; // Exclude Audio button
       
       isDragging = true;
+      card.classList.add('inspect-active');
+      
       startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
       startY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
-      card.style.transition = 'none';
+      
+      card.style.transition = 'transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.15s ease';
+      card.style.transform = 'scale(1.05)';
+      setTimeout(() => {
+        if (isDragging) card.style.transition = 'none';
+      }, 150);
       
       document.addEventListener('mousemove', drag);
       document.addEventListener('touchmove', drag, { passive: false });
@@ -553,7 +719,7 @@ function initSwipeLogic() {
       currentY = y - startY;
       
       const rotate = currentX * 0.05;
-      card.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${rotate}deg)`;
+      card.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${rotate}deg) scale(1.05)`;
 
       if (currentX > 0) {
         rightIndicator.style.opacity = Math.min(currentX / 100, 1);
@@ -567,6 +733,7 @@ function initSwipeLogic() {
     function dragEnd(e) {
       if (!isDragging) return;
       isDragging = false;
+      card.classList.remove('inspect-active');
       
       document.removeEventListener('mousemove', drag);
       document.removeEventListener('touchmove', drag);
@@ -577,6 +744,7 @@ function initSwipeLogic() {
       card.style.transition = 'transform 0.4s ease-out, opacity 0.4s ease-out';
       
       if (currentX > threshold) {
+        playSound('swipe');
         card.style.transform = `translate(${window.innerWidth}px, ${currentY}px) rotate(${currentX * 0.05}deg)`;
         card.style.opacity = '0';
         setTimeout(() => {
@@ -588,11 +756,17 @@ function initSwipeLogic() {
           }
         }, 400);
       } else if (currentX < -threshold) {
+        playSound('swipe');
+        // SRS: Add to review words when swiped left
+        if (!currentUserData.reviewWords) currentUserData.reviewWords = [];
+        const wordTerm = card.querySelector('.vocab-term').textContent;
+        if (!currentUserData.reviewWords.includes(wordTerm)) currentUserData.reviewWords.push(wordTerm);
+        
         card.style.transform = `translate(-${window.innerWidth}px, ${currentY}px) rotate(${currentX * 0.05}deg)`;
         card.style.opacity = '0';
         setTimeout(() => {
           card.style.transition = 'none';
-          card.style.transform = 'translate(0px, 0px) rotate(0deg)';
+          card.style.transform = 'translate(0px, 0px) rotate(0deg) scale(1)';
           card.style.opacity = '1';
           leftIndicator.style.opacity = 0;
           rightIndicator.style.opacity = 0;
@@ -602,7 +776,7 @@ function initSwipeLogic() {
           updateZIndices();
         }, 400);
       } else {
-        card.style.transform = 'translate(0px, 0px) rotate(0deg)';
+        card.style.transform = 'translate(0px, 0px) rotate(0deg) scale(1)';
         leftIndicator.style.opacity = 0;
         rightIndicator.style.opacity = 0;
       }
@@ -614,19 +788,14 @@ function initSwipeLogic() {
 }
 
 function startQuizPhase() {
+  dashboardContent.classList.add("hidden");
+  if (dailyDropSection) dailyDropSection.classList.add("hidden");
+  if (userMenuWrapper) userMenuWrapper.classList.add("hidden"); // Fully hides the student profile header
   dailyVocabSection.classList.add("hidden");
   gameSection.classList.remove("hidden");
-  const leaderboardSection = document.getElementById("student-leaderboard-section");
-  if (leaderboardSection) leaderboardSection.classList.add("hidden");
 
-  // Keep container expanded for the match phase
-  const container = document.querySelector('.container');
-  container.style.maxWidth = '1000px';
-  container.style.padding = window.innerWidth <= 480 ? '20px 10px' : '40px 20px';
-  container.style.background = 'transparent';
-  container.style.border = 'none';
-  container.style.backdropFilter = 'none';
-  container.style.boxShadow = 'none';
+  if (menuBackProfileBtn) menuBackProfileBtn.classList.remove("hidden");
+
 
   const themeConfig = {
     DECK: { hex: '#00c6ff', shadow: 'rgba(0, 198, 255, 0.4)' },
@@ -699,6 +868,11 @@ function startQuizPhase() {
     const targetTerm = card.getAttribute('data-match');
     
     if (term === targetTerm) {
+      playSound('match');
+      // SRS: Remove correctly matched term from review list
+      if (currentUserData.reviewWords) {
+        currentUserData.reviewWords = currentUserData.reviewWords.filter(w => w !== term);
+      }
       // Correct Match
       card.classList.add('matched');
       card.style.borderStyle = 'solid';
@@ -720,9 +894,34 @@ function startQuizPhase() {
       matchedCount++;
 
       if (matchedCount === 3) {
+        // Gamification: Streaks Logic
+        const todayStr = new Date().toISOString().split('T')[0];
+        let lastPlayed = currentUserData.lastPlayed || "";
+        let currentStreak = currentUserData.streak || 0;
+        let streakBonus = 0;
+        
+        if (lastPlayed !== todayStr) {
+          let yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+          const yesterdayStr = yesterday.toISOString().split('T')[0];
+          
+          if (lastPlayed === yesterdayStr) {
+            currentStreak++;
+          } else {
+            currentStreak = 1;
+          }
+          
+          if (currentStreak > 0 && currentStreak % 7 === 0) {
+            streakBonus = 50;
+          }
+        }
+        currentUserData.lastPlayed = todayStr;
+        currentUserData.streak = currentStreak;
+        potentialXp += streakBonus;
+        
         document.getElementById('quiz-actions').classList.add('hidden');
         const footer = document.getElementById('match-complete-footer');
-        footer.querySelector('.xp-earned-text').textContent = `+${potentialXp} XP EARNED`;
+        footer.querySelector('.xp-earned-text').textContent = `+${potentialXp} XP EARNED${streakBonus ? ' (includes 50 XP Streak Bonus!)' : ''}`;
         footer.classList.remove('hidden');
         
         currentUserData.weeklySetsCompleted = (currentUserData.weeklySetsCompleted || 0) + 1;
@@ -732,24 +931,25 @@ function startQuizPhase() {
           const userRef = doc(db, "users", currentUserData.studentId);
           await updateDoc(userRef, { 
             xp: increment(potentialXp),
-            weeklySetsCompleted: currentUserData.weeklySetsCompleted
+            weeklySetsCompleted: currentUserData.weeklySetsCompleted,
+            streak: currentStreak,
+            lastPlayed: todayStr,
+            reviewWords: currentUserData.reviewWords || []
           });
         } catch (error) {
           console.error("Error updating XP:", error);
         }
         
         document.getElementById('return-to-dash-btn').addEventListener('click', () => {
-          container.style.maxWidth = '';
-          container.style.padding = '';
-          container.style.background = '';
-          container.style.border = '';
-          container.style.backdropFilter = '';
-          container.style.boxShadow = '';
-          
           loadDashboard(currentUserData);
         });
       }
     } else {
+      playSound('error');
+      // SRS: Add to review words when matched incorrectly
+      if (!currentUserData.reviewWords) currentUserData.reviewWords = [];
+      if (!currentUserData.reviewWords.includes(targetTerm)) currentUserData.reviewWords.push(targetTerm);
+      
       // Wrong Match Penalty
       potentialXp = Math.max(0, potentialXp - 5);
       
@@ -818,13 +1018,6 @@ function startQuizPhase() {
   });
 
   document.getElementById("back-to-profile-btn-quiz").addEventListener("click", () => {
-    const container = document.querySelector('.container');
-    container.style.maxWidth = '';
-    container.style.padding = '';
-    container.style.background = '';
-    container.style.border = '';
-    container.style.backdropFilter = '';
-    container.style.boxShadow = '';
     loadDashboard(currentUserData);
   });
 }
@@ -1048,7 +1241,10 @@ function renderAdminWeeklyTable() {
 
 async function loadAdminDashboard() {
   authSection.classList.add("hidden");
-  dashboardSection.classList.add("hidden");
+  if (userMenuWrapper) userMenuWrapper.classList.add("hidden");
+  dashboardContent.classList.add("hidden");
+  dailyVocabSection.classList.add("hidden");
+  gameSection.classList.add("hidden");
   adminDashboardSection.classList.remove("hidden");
   document.querySelector(".container").classList.add("admin-mode");
   
@@ -1119,13 +1315,22 @@ function renderAdminChart(filterType) {
     counts[key] = (counts[key] || 0) + 1;
   });
   
+  // Dynamically map colors so the chart legend matches the UI role colors
+  let bgColors = ['#00c6ff', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#3b82f6', '#ec4899', '#14b8a6'];
+  if (filterType === 'rank') {
+    bgColors = Object.keys(counts).map(rank => getRankColor(rank));
+  } else if (filterType === 'department') {
+    const deptTheme = { "DECK": "#00c6ff", "ENGINE": "#f97316", "LOGISTICS": "#14b8a6" };
+    bgColors = Object.keys(counts).map(dept => deptTheme[dept] || '#8b5cf6');
+  }
+
   adminChartInstance = new Chart(ctx, {
     type: 'doughnut',
     data: {
       labels: Object.keys(counts),
       datasets: [{
         data: Object.values(counts),
-        backgroundColor: ['#00c6ff', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#3b82f6', '#ec4899', '#14b8a6'],
+        backgroundColor: bgColors,
         borderColor: '#1e293b',
         borderWidth: 2,
         hoverOffset: 5
@@ -1192,6 +1397,9 @@ function loadDashboard(userData) {
   // Check and promote rank based on accumulated XP
   const calculatedRank = getStudentRank(userData.xp || 0, userData.department);
   if (userData.rank !== calculatedRank) {
+    if (userData.rank) { // Play level up sound only if rank changed during active session
+      playSound('levelup');
+    }
     userData.rank = calculatedRank;
     // Background update to sync the promotion back to the database
     updateDoc(doc(db, "users", userData.studentId), { rank: calculatedRank }).catch(e => console.error(e));
@@ -1199,9 +1407,13 @@ function loadDashboard(userData) {
 
   currentUserData = userData;
   authSection.classList.add("hidden");
-  dashboardSection.classList.remove("hidden");
+  if (userMenuWrapper) userMenuWrapper.classList.remove("hidden");
+  dashboardContent.classList.remove("hidden");
+  if (dailyDropSection) dailyDropSection.classList.remove("hidden");
   document.querySelector(".container").classList.remove("admin-mode");
   
+  if (menuBackProfileBtn) menuBackProfileBtn.classList.add("hidden");
+
   userNameSpan.textContent = userData.name;
   userRoleSpan.textContent = userData.role;
 
@@ -1210,11 +1422,76 @@ function loadDashboard(userData) {
   document.getElementById("user-streak").textContent = `${userData.streak || 0} Days`;
   document.getElementById("user-xp").textContent = userData.xp || 0;
   
-  dailyDropSection.classList.remove("hidden");
+  // Populate Menu Mini Stats
+  const menuDept = document.getElementById("menu-user-department");
+  if (menuDept) menuDept.textContent = userData.department || "DECK";
+  const menuRank = document.getElementById("menu-user-rank");
+  if (menuRank) {
+    menuRank.textContent = userData.rank || "Deckhand";
+    menuRank.style.color = getRankColor(userData.rank || "Deckhand");
+  }
+  const menuStreak = document.getElementById("menu-user-streak");
+  if (menuStreak) menuStreak.textContent = `${userData.streak || 0} Days`;
+  const menuXp = document.getElementById("menu-user-xp");
+  if (menuXp) menuXp.textContent = userData.xp || 0;
+
+  // Department themes for progress bar
+  const deptThemes = {
+    DECK: { icon: "🚢", gradient: "linear-gradient(90deg, #00c6ff, #0072ff)", shadow: "rgba(0, 198, 255, 0.5)" },
+    ENGINE: { icon: "⚙️", gradient: "linear-gradient(90deg, #f97316, #ea580c)", shadow: "rgba(249, 115, 22, 0.5)" },
+    LOGISTICS: { icon: "📦", gradient: "linear-gradient(90deg, #14b8a6, #0d9488)", shadow: "rgba(20, 184, 166, 0.5)" }
+  };
+  const userDept = userData.department ? userData.department.toUpperCase() : "DECK";
+  const theme = deptThemes[userDept] || deptThemes.DECK;
+
+  // Update Gamification Progress Bar
+  const thresholds = [0, 300, 800, 1500, 2500, 4000, 6000, 10000];
+  const rankNames = {
+    DECK: ["Cadet", "Ordinary Seaman", "Able Seaman", "Bosun", "Third Officer", "Second Officer", "Chief Officer", "Master"],
+    ENGINE: ["Cadet", "Wiper", "Oiler", "Motorman", "Third Engineer", "Second Engineer", "First Engineer", "Chief Engineer"],
+    LOGISTICS: ["Cadet", "Tally Clerk", "Cargo Clerk", "Cargo Supervisor", "Assistant Purser", "Purser", "Chief Purser", "Supercargo"]
+  };
+  const currentXP = userData.xp || 0;
+  const deptRanks = rankNames[userData.department] || rankNames.DECK;
+  
+  let currentTierIdx = 0;
+  for(let i = 0; i < thresholds.length; i++) {
+    if(currentXP >= thresholds[i]) currentTierIdx = i;
+  }
+  
+  let nextTierIdx = Math.min(currentTierIdx + 1, thresholds.length - 1);
+  let currentRankName = deptRanks[currentTierIdx];
+  let nextRankName = deptRanks[nextTierIdx];
+  
+  let currentTierXP = thresholds[currentTierIdx];
+  let nextTierXP = thresholds[nextTierIdx];
+  
+  let progressPercent = 100;
+  let xpToNext = 0;
+  if(currentTierIdx !== nextTierIdx) {
+    let xpInTier = currentXP - currentTierXP;
+    let tierSize = nextTierXP - currentTierXP;
+    progressPercent = (xpInTier / tierSize) * 100;
+    xpToNext = nextTierXP - currentXP;
+  } else {
+    nextRankName = "MAX RANK";
+  }
+  
+  document.getElementById("current-rank-label").textContent = currentRankName;
+  document.getElementById("next-rank-label").textContent = nextRankName;
+  
+  const fillEl = document.getElementById("rank-progress-fill");
+  fillEl.style.width = `${progressPercent}%`;
+  fillEl.style.backgroundImage = theme.gradient; // Use backgroundImage to forcefully override inline CSS
+  fillEl.style.boxShadow = `0 0 10px ${theme.shadow}`;
+  
+  const iconEl = document.getElementById("rank-progress-icon");
+  if (iconEl) iconEl.textContent = theme.icon;
+
+  document.getElementById("xp-to-next-label").textContent = xpToNext > 0 ? `${xpToNext} XP to next rank` : "Maximum Rank Achieved";
+
   dailyVocabSection.classList.add("hidden");
   gameSection.classList.add("hidden");
-  const leaderboardSection = document.getElementById("student-leaderboard-section");
-  if (leaderboardSection) leaderboardSection.classList.remove("hidden");
 
   if (userData.weeklySetsCompleted >= 5) {
     startDailyBtn.textContent = "Weekly Training Complete";

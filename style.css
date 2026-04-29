@@ -140,6 +140,14 @@ button:hover {
 .stats-container p { margin: 0 0 5px 0; font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
 .stats-container strong { font-size: 16px; }
 
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+.bobbing-icon {
+  animation: bob 2s ease-in-out infinite;
+}
+
 .daily-drop {
   background: #0f172a;
   border: 1px solid rgba(0, 198, 255, 0.3);
@@ -279,10 +287,42 @@ button:hover {
   touch-action: none;
   cursor: grab;
   will-change: transform;
+  overflow: hidden;
 }
 
 .swipe-card:active {
   cursor: grabbing;
+}
+
+/* Card Inspection Animation */
+.swipe-card.inspect-active {
+  z-index: 100 !important;
+  filter: brightness(1.15);
+}
+
+.swipe-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+  transform: skewX(-25deg);
+  z-index: 25;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.swipe-card.inspect-active::after {
+  opacity: 1;
+  animation: shineSweep 1.5s ease-in-out infinite;
+}
+
+@keyframes shineSweep {
+  0% { left: -100%; }
+  50% { left: 200%; }
+  100% { left: 200%; }
 }
 
 .vocab-image-container {

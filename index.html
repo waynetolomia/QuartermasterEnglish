@@ -42,25 +42,73 @@
       <p id="auth-message"></p>
     </div>
 
-    <div id="dashboard-section" class="hidden">
-      <h2>Welcome Aboard,<br><span id="user-name" class="user-name-text"></span></h2>
-      
-      <div class="stats-container">
-        <div>
-          <p>Dept</p>
-          <strong id="user-department" class="role-badge">...</strong>
+    <!-- Top Navigation: Menu button separated from main header to remain visible during activities -->
+    <div id="user-menu-wrapper" class="hidden" style="display: flex; justify-content: flex-end; width: 100%; margin-bottom: 10px;">
+        <div style="position: relative;">
+          <button id="user-menu-btn" style="width: 45px; height: 45px; padding: 0; border-radius: 12px; background: #1e293b; border: 1px solid #334155; color: #00c6ff; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: all 0.2s;">☰</button>
+          
+          <div id="user-dropdown-menu" class="hidden" style="position: absolute; top: 55px; right: 0; background: #0f172a; border: 1px solid #334155; border-radius: 16px; padding: 20px; width: 260px; z-index: 1000; box-shadow: 0 15px 30px rgba(0,0,0,0.6); text-align: left;">
+            
+            <p class="role-text" style="font-size: 12px; margin-top: 0; border-bottom: 1px solid #334155; padding-bottom: 10px; color: #94a3b8;">Access Level: <span id="user-role" class="role-badge">...</span></p>
+            
+            <div style="margin-bottom: 15px;">
+              <h4 style="color: #00c6ff; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; margin-top: 0;">Rank Legend</h4>
+              <div style="font-size: 11px; display: flex; flex-direction: column; gap: 6px; line-height: 1.4;">
+                <div><span style="color: #94a3b8; font-weight: bold;">Cadet</span> (0-299)</div>
+                <div><span style="color: #3b82f6; font-weight: bold;">OS / Wiper / Tally</span> (300-799)</div>
+                <div><span style="color: #10b981; font-weight: bold;">AB / Oiler / Cargo C.</span> (800-1499)</div>
+                <div><span style="color: #f59e0b; font-weight: bold;">Bosun / Motor / Cargo S.</span> (1500-2499)</div>
+                <div><span style="color: #8b5cf6; font-weight: bold;">3rd Off / Eng / Asst.</span> (2500-3999)</div>
+                <div><span style="color: #ec4899; font-weight: bold;">2nd Off / Eng / Purser</span> (4000-5999)</div>
+                <div><span style="color: #ef4444; font-weight: bold;">C/O / 1st Eng / Chief P.</span> (6000-9999)</div>
+                <div><span style="color: #eab308; font-weight: bold;">Master / C/E / Super</span> (10000+)</div>
+              </div>
+            </div>
+            
+            <button id="menu-back-profile-btn" class="secondary-btn hidden" style="margin: 0 0 10px 0; padding: 12px; font-size: 13px; width: 100%; border-color: #10b981; color: #10b981;">Back to Profile</button>
+            <button id="logout-btn" class="secondary-btn" style="margin: 0; padding: 12px; font-size: 13px; width: 100%;">Logout</button>
+          </div>
         </div>
-        <div>
-          <p>Rank</p>
-          <strong id="user-rank" class="role-badge">Deckhand</strong>
+      </div>
+
+    <!-- Dashboard Content Wrapper (hides during challenges) -->
+    <div id="dashboard-content" class="hidden">
+      <div id="dashboard-header">
+        <div id="welcome-container" style="margin-bottom: 20px; text-align: left;">
+          <h2 style="margin: 0; text-align: left;">Welcome Aboard,<br><span id="user-name" class="user-name-text"></span></h2>
         </div>
-        <div>
-          <p>Streak</p>
-          <strong id="user-streak" class="role-badge">0 Days</strong>
+
+        <div id="stats-container" class="stats-container">
+          <div>
+            <p>Dept</p>
+            <strong id="user-department" class="role-badge">...</strong>
+          </div>
+          <div>
+            <p>Rank</p>
+            <strong id="user-rank" class="role-badge">Deckhand</strong>
+          </div>
+          <div>
+            <p>Streak</p>
+            <strong id="user-streak" class="role-badge">0 Days</strong>
+          </div>
+          <div>
+            <p>XP</p>
+            <strong id="user-xp" class="role-badge">0</strong>
+          </div>
         </div>
-        <div>
-          <p>XP</p>
-          <strong id="user-xp" class="role-badge">0</strong>
+        
+        <!-- XP Progress Bar -->
+        <div id="xp-progress-container" style="background: #0f172a; border-radius: 12px; border: 1px solid #334155; padding: 15px; margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; color: #94a3b8; margin-bottom: 8px;">
+            <span>Current: <strong id="current-rank-label" style="color: #cbd5e1;">...</strong></span>
+            <span>Next: <strong id="next-rank-label" style="color: #cbd5e1;">...</strong></span>
+          </div>
+          <div style="width: 100%; background: #1e293b; border-radius: 8px; height: 14px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); position: relative; margin-top: 12px; margin-bottom: 8px;">
+            <div id="rank-progress-fill" style="height: 100%; width: 0%; background: linear-gradient(90deg, #00c6ff, #0072ff); transition: width 0.5s ease-out; box-shadow: 0 0 10px rgba(0,198,255,0.5); border-radius: 8px; position: relative;">
+              <div id="rank-progress-icon" class="bobbing-icon" style="position: absolute; right: -10px; top: -6px; font-size: 16px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); z-index: 10; transition: transform 0.3s ease;">🚢</div>
+            </div>
+          </div>
+          <div style="text-align: center; font-size: 11px; color: #64748b; margin-top: 8px;" id="xp-to-next-label">... XP to next rank</div>
         </div>
       </div>
       
@@ -70,14 +118,6 @@
         <button id="start-daily-btn">Start Daily 3</button>
       </div>
       
-      <div id="daily-vocab-section" class="hidden">
-        <!-- Stacked Card injected here -->
-      </div>
-      
-      <div id="game-section" class="hidden">
-        <!-- Quiz injected here -->
-      </div>
-
       <div id="student-leaderboard-section" class="admin-section" style="margin-top: 30px; text-align: left;">
         <h3 style="text-align: center; border-bottom: none; padding-bottom: 0; margin-bottom: 15px;">Crew Rankings</h3>
         <div class="table-container" style="max-height: 200px;">
@@ -86,20 +126,15 @@
             <tbody></tbody>
           </table>
         </div>
-        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; font-size: 11px;">
-          <div><span style="color: #94a3b8; font-weight: bold; text-transform: uppercase;">Cadet</span> <span style="color: #64748b;">(0-299)</span></div>
-          <div><span style="color: #3b82f6; font-weight: bold; text-transform: uppercase;">OS / Wiper</span> <span style="color: #64748b;">(300-799)</span></div>
-          <div><span style="color: #10b981; font-weight: bold; text-transform: uppercase;">AB / Oiler</span> <span style="color: #64748b;">(800-1499)</span></div>
-          <div><span style="color: #f59e0b; font-weight: bold; text-transform: uppercase;">Bosun / Motorman</span> <span style="color: #64748b;">(1500-2499)</span></div>
-          <div><span style="color: #8b5cf6; font-weight: bold; text-transform: uppercase;">3rd Off / 3rd Eng</span> <span style="color: #64748b;">(2500-3999)</span></div>
-          <div><span style="color: #ec4899; font-weight: bold; text-transform: uppercase;">2nd Off / 2nd Eng</span> <span style="color: #64748b;">(4000-5999)</span></div>
-          <div><span style="color: #ef4444; font-weight: bold; text-transform: uppercase;">C/O / 1st Eng</span> <span style="color: #64748b;">(6000-9999)</span></div>
-          <div><span style="color: #eab308; font-weight: bold; text-transform: uppercase;">Master / C/E</span> <span style="color: #64748b;">(10000+)</span></div>
-        </div>
       </div>
+    </div> <!-- End of dashboard-content -->
 
-      <p class="role-text" style="font-size: 12px; margin-bottom: 10px;">Access Level: <span id="user-role">...</span></p>
-      <button id="logout-btn" class="secondary-btn">Logout</button>
+    <div id="daily-vocab-section" class="hidden">
+      <!-- Stacked Card injected here -->
+    </div>
+    
+    <div id="game-section" class="hidden">
+      <!-- Quiz injected here -->
     </div>
 
     <div id="admin-dashboard-section" class="hidden admin-panel">
