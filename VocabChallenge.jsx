@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getFirestore, doc, updateDoc, increment } from 'firebase/firestore';
+import { getFirestore, doc, updateDoc, increment, arrayUnion } from 'firebase/firestore';
 import vocabData from '../../maritime_vocab.json';
 
 // Department mapping to filter vocabulary categories
@@ -24,7 +24,7 @@ export default function VocabChallenge({ studentId, department = 'DECK', onCompl
   }, [department]);
 
   // Handle Firebase Update when a card is mastered
-  const handleMasterCard = async () => {
+  const handleMasterCard = async (term) => {
     setMasteredCount(prev => prev + 1);
     
     if (!studentId) return;
@@ -32,9 +32,10 @@ export default function VocabChallenge({ studentId, department = 'DECK', onCompl
     try {
       const db = getFirestore();
       const userRef = doc(db, 'users', studentId);
-      // Automatically increment the user's XP in Firestore
+      // Automatically increment the user's XP in Firestore and add mastered word
       await updateDoc(userRef, {
-        xp: increment(10)
+        xp: increment(10),
+        masteredWords: arrayUnion(term)
       });
     } catch (error) {
       console.error("Error updating XP in Firebase:", error);
@@ -68,7 +69,7 @@ export default function VocabChallenge({ studentId, department = 'DECK', onCompl
             word={word} 
             tier={tiers[index]} 
             dept={department} 
-            onMaster={handleMasterCard} 
+            onMaster={() => handleMasterCard(word.term)} 
           />
         ))}
       </main>

@@ -78,6 +78,8 @@ let currentAdminStudents = [];
 let adminVocabs = [];
 let adminSelectedWords = [];
 let adminChartInstance = null;
+let adminInactivityTimer = null;
+let adminLogoutInitialized = false;
 
 // Department Mapping Definitions
 const deptCategories = {
@@ -321,7 +323,8 @@ showLoginBtn.addEventListener("click", () => {
   authMessage.textContent = "";
 });
 
-registerBtn.addEventListener("click", async () => {
+registerBtn.addEventListener("click", async (e) => {
+  if (e) e.preventDefault(); // Prevents the page from refreshing when the form is submitted
   const studentId = regStudentIdInput.value.trim().toUpperCase();
   const name = regNameInput.value.trim();
   const email = regEmailInput.value.trim();
@@ -360,6 +363,7 @@ registerBtn.addEventListener("click", async () => {
       weekId: 0,
       weeklySetsCompleted: 0,
       weeklyWords: [],
+      masteredWords: [],
       lastPlayed: "",
       createdAt: new Date().toISOString()
     });
@@ -374,7 +378,8 @@ registerBtn.addEventListener("click", async () => {
   }
 });
 
-loginBtn.addEventListener("click", async () => {
+loginBtn.addEventListener("click", async (e) => {
+  if (e) e.preventDefault(); // Prevents the page from refreshing when the form is submitted
   let studentId = loginStudentIdInput.value.trim().toUpperCase();
   let password = loginPasswordInput.value;
 
@@ -413,6 +418,7 @@ loginBtn.addEventListener("click", async () => {
           weekId: 0,
           weeklySetsCompleted: 0,
           weeklyWords: [],
+          masteredWords: [],
           lastPlayed: "",
           createdAt: new Date().toISOString()
         };
@@ -571,7 +577,7 @@ startDailyBtn.addEventListener("click", async () => {
   }
 });
 
-function renderVocabChallenge() {
+function renderVocabChallenge(isAdmin = false, user = currentUserData) {
   dashboardContent.classList.add("hidden");
   if (dailyDropSection) dailyDropSection.classList.add("hidden");
   if (userMenuWrapper) userMenuWrapper.classList.add("hidden"); // Fully hides the student profile header
@@ -586,7 +592,7 @@ function renderVocabChallenge() {
     ENGINE: { hex: '#f97316', shadow: 'rgba(249, 115, 22, 0.4)' },
     LOGISTICS: { hex: '#14b8a6', shadow: 'rgba(20, 184, 166, 0.4)' }
   };
-  const userDept = currentUserData.department ? currentUserData.department.toUpperCase() : "DECK";
+  const userDept = user.department ? user.department.toUpperCase() : "DECK";
   const theme = themeConfig[userDept] || themeConfig.DECK;
 
   const cardsHtml = dailyWords.map((word, index) => {
@@ -644,7 +650,7 @@ function renderVocabChallenge() {
     <div id="quiz-ready-container" class="hidden" style="text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 20px;">
       <h4 style="color: #34d399; font-size: 20px; margin: 0; text-transform: uppercase; letter-spacing: 1px;">Deck Mastered!</h4>
       <button id="next-card-btn" style="width: 100%; max-width: 350px; font-size: 16px; padding: 18px 30px; border-radius: 12px; text-transform: uppercase; letter-spacing: 2px; background: linear-gradient(135deg, ${theme.hex} 0%, #0072ff 100%); box-shadow: 0 4px 15px ${theme.shadow}; border: 1px solid ${theme.hex};">
-        I'm Ready For Quiz
+        ${isAdmin ? "Start Admin Quiz" : "I'm Ready For Quiz"}
       </button>
     </div>
 
@@ -672,13 +678,21 @@ function renderVocabChallenge() {
   });
   
   document.getElementById("back-to-profile-btn-vocab").addEventListener("click", () => {
-    loadDashboard(currentUserData);
+    if (isAdmin) {
+      loadAdminDashboard();
+    } else {
+      loadDashboard(currentUserData);
+    }
   });
 
   const nextCardBtn = document.getElementById("next-card-btn");
   if(nextCardBtn) {
     nextCardBtn.addEventListener("click", () => {
-      startQuizPhase();
+      if (isAdmin) {
+        startQuizPhase(true, user);
+      } else {
+        startQuizPhase();
+      }
     });
   }
 
@@ -807,7 +821,7 @@ function initSwipeLogic() {
   });
 }
 
-function startQuizPhase() {
+function startQuizPhase(isAdmin = false, user = currentUserData) {
   dashboardContent.classList.add("hidden");
   if (dailyDropSection) dailyDropSection.classList.add("hidden");
   if (userMenuWrapper) userMenuWrapper.classList.add("hidden"); // Fully hides the student profile header
@@ -822,7 +836,7 @@ function startQuizPhase() {
     ENGINE: { hex: '#f97316', shadow: 'rgba(249, 115, 22, 0.4)' },
     LOGISTICS: { hex: '#14b8a6', shadow: 'rgba(20, 184, 166, 0.4)' }
   };
-  const userDept = currentUserData.department ? currentUserData.department.toUpperCase() : "DECK";
+  const userDept = user.department ? user.department.toUpperCase() : "DECK";
   const theme = themeConfig[userDept] || themeConfig.DECK;
 
   let selectedTerm = null;
@@ -833,12 +847,29 @@ function startQuizPhase() {
   let potentialXp = dailyWords.reduce((sum, word) => sum + getWordXp(word.level || "Cadet Level"), 0);
 
   gameSection.innerHTML = `
+    <style>
+      @keyframes pulse_bomb {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+      }
+      .bomb-pulsing { animation: pulse_bomb 1s infinite; }
+      @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    </style>
     <h3 style="text-align: center; color: #f8fafc; margin-bottom: 10px; font-size: 32px; text-transform: uppercase; letter-spacing: 3px; font-family: 'Orbitron', sans-serif; text-shadow: 0 0 15px ${theme.shadow};">
       Knowledge Check
     </h3>
     <p style="text-align: center; color: #94a3b8; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 2px; font-size: 13px;">
       Tap or drag the correct term into its sentence
     </p>
+
+    <!-- Timer Bar -->
+    <div style="display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%; max-width: 800px; margin: 0 auto 30px auto;">
+      <span id="quiz-bomb-icon" style="font-size: 28px; transition: transform 0.3s;">💣</span>
+      <div id="quiz-timer-container" style="flex-grow: 1; background: #1e293b; border-radius: 10px; overflow: hidden; height: 12px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);">
+        <div id="quiz-timer-bar" style="width: 100%; height: 100%; background: linear-gradient(90deg, #4ade80, #34d399); transition: width 1s linear, background 1s linear; box-shadow: 0 0 8px rgba(52, 211, 153, 0.5);"></div>
+      </div>
+    </div>
 
     <!-- Draggable Terms -->
     <div id="terms-container" style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 40px;">
@@ -864,24 +895,70 @@ function startQuizPhase() {
       }).join('')}
     </div>
 
-    <!-- Return Actions -->
-    <div id="quiz-actions" style="text-align: center; margin-top: 40px;">
-      <button id="back-to-profile-btn-quiz" class="secondary-btn" style="max-width: 250px; font-size: 14px; padding: 14px 24px; border-radius: 12px; border-color: #64748b; color: #cbd5e1; text-transform: uppercase; letter-spacing: 1px;">
-        Back to Profile
-      </button>
-    </div>
-
     <!-- Completion Footer -->
-    <div id="match-complete-footer" class="hidden" style="text-align: center; margin-top: 40px; animation: fadeIn 0.5s;">
-       <div style="font-size: 48px; margin-bottom: 15px;">⭐⭐⭐</div>
-       <div class="xp-earned-text" style="color: #34d399; font-weight: 900; font-size: 24px; letter-spacing: 2px; text-shadow: 0 0 15px rgba(52,211,153,0.8); margin-bottom: 25px;">+0 XP EARNED</div>
-       <button id="return-to-dash-btn" style="max-width: 300px; margin: 0 auto; background: linear-gradient(135deg, ${theme.hex} 0%, #0072ff 100%);">Return to Dashboard</button>
+    <div id="match-complete-footer" class="hidden" style="position: fixed; inset: 0; background: rgba(10, 25, 47, 0.85); backdrop-filter: blur(4px); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+      <div style="background: #0f172a; border: 2px solid ${theme.hex}; border-radius: 16px; padding: 40px 20px; box-shadow: 0 0 25px ${theme.shadow}; text-align: center; width: 90%; max-width: 400px; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+         <div style="font-size: 64px; margin-bottom: 15px;">⭐⭐⭐</div>
+         <div class="xp-earned-text" style="color: #34d399; font-weight: 900; font-size: 22px; letter-spacing: 1px; text-shadow: 0 0 15px rgba(52,211,153,0.8); margin-bottom: 25px;">+0 XP EARNED</div>
+         <button id="return-to-dash-btn" style="width: 100%; max-width: 300px; margin: 0 auto; padding: 15px; font-size: 16px; border-radius: 12px; font-weight: bold; background: linear-gradient(135deg, ${theme.hex} 0%, #0072ff 100%); box-shadow: 0 4px 15px ${theme.shadow}; border: 1px solid ${theme.hex}; cursor: pointer; color: white;">Return to Dashboard</button>
+      </div>
     </div>
   `;
 
   // Event Listeners
   const termCards = document.querySelectorAll('.term-card');
   const defCards = document.querySelectorAll('.def-card');
+
+  // Timer Logic (90 seconds)
+  let timeLeft = 90;
+  const timerBar = document.getElementById("quiz-timer-bar");
+  const bombIcon = document.getElementById("quiz-bomb-icon");
+  const timerInterval = setInterval(() => {
+    timeLeft--;
+    const percent = (timeLeft / 90) * 100;
+    timerBar.style.width = `${percent}%`;
+    
+    if (timeLeft <= 45 && timeLeft > 20) {
+      timerBar.style.background = 'linear-gradient(90deg, #fbbf24, #f97316)';
+      timerBar.style.boxShadow = '0 0 8px rgba(249, 115, 22, 0.5)';
+    }
+    if (timeLeft <= 20) {
+      timerBar.style.background = 'linear-gradient(90deg, #f87171, #ef4444)';
+      timerBar.style.boxShadow = '0 0 8px rgba(239, 68, 68, 0.5)';
+      if (bombIcon) bombIcon.classList.add('bomb-pulsing');
+    }
+    
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      if (bombIcon) bombIcon.classList.remove('bomb-pulsing');
+      
+      // Time's Up Logic
+      termCards.forEach(c => c.style.pointerEvents = 'none');
+      defCards.forEach(c => c.style.pointerEvents = 'none');
+      
+      const footer = document.getElementById('match-complete-footer');
+      if (isAdmin) {
+        footer.innerHTML = `
+          <div style="background: #0f172a; border: 2px solid #ef4444; border-radius: 16px; padding: 40px 20px; box-shadow: 0 0 25px rgba(239,68,68,0.5); text-align: center; width: 90%; max-width: 400px; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+            <div style="font-size: 64px; margin-bottom: 15px;">⏰</div>
+            <div style="color: #ef4444; font-weight: 900; font-size: 24px; letter-spacing: 2px; text-shadow: 0 0 15px rgba(239,68,68,0.8); margin-bottom: 25px;">TIME'S UP!</div>
+            <button id="return-to-admin-dash-btn" class="secondary-btn" style="width: 100%; max-width: 300px; margin: 0 auto; padding: 15px;">Back to Admin Dashboard</button>
+          </div>`;
+      } else {
+        footer.innerHTML = `
+          <div style="background: #0f172a; border: 2px solid #ef4444; border-radius: 16px; padding: 40px 20px; box-shadow: 0 0 25px rgba(239,68,68,0.5); text-align: center; width: 90%; max-width: 400px; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+            <div style="font-size: 64px; margin-bottom: 15px;">⏰</div>
+            <div style="color: #ef4444; font-weight: 900; font-size: 24px; letter-spacing: 2px; text-shadow: 0 0 15px rgba(239,68,68,0.8); margin-bottom: 25px;">TIME'S UP!</div>
+            <button id="return-to-dash-btn" class="secondary-btn" style="width: 100%; max-width: 300px; margin: 0 auto; padding: 15px;">Return to Dashboard</button>
+          </div>`;
+      }
+      footer.classList.remove('hidden');
+      const returnBtn = document.getElementById('return-to-dash-btn') || document.getElementById('return-to-admin-dash-btn');
+      returnBtn.addEventListener('click', () => {
+        isAdmin ? loadAdminDashboard() : loadDashboard(currentUserData);
+      });
+    }
+  }, 1000);
 
   async function handleMatch(card, term) {
     if (card.classList.contains('matched')) return;
@@ -914,7 +991,26 @@ function startQuizPhase() {
       matchedCount++;
 
       if (matchedCount === 3) {
-        // Gamification: Streaks Logic
+        clearInterval(timerInterval); // Stop the timer when they finish
+        if (bombIcon) bombIcon.classList.remove('bomb-pulsing');
+
+        if (isAdmin) {
+          const footer = document.getElementById('match-complete-footer');
+          footer.innerHTML = `
+            <div style="background: #0f172a; border: 2px solid #34d399; border-radius: 16px; padding: 40px 20px; box-shadow: 0 0 25px rgba(52,211,153,0.5); text-align: center; width: 90%; max-width: 400px; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+               <div style="font-size: 64px; margin-bottom: 15px;">👍</div>
+               <div class="xp-earned-text" style="color: #34d399; font-weight: 900; font-size: 24px; letter-spacing: 2px; text-shadow: 0 0 15px rgba(52,211,153,0.8); margin-bottom: 25px;">TEST COMPLETE</div>
+               <div style="display: flex; flex-direction: column; gap: 15px; align-items: center; margin-top: 20px;">
+                   <button id="return-to-admin-dash-btn" style="width: 100%; max-width: 250px; padding: 15px;">Back to Dashboard</button>
+               </div>
+            </div>
+          `;
+          footer.classList.remove('hidden');
+          document.getElementById('return-to-admin-dash-btn').addEventListener('click', loadAdminDashboard);
+          return; // End admin flow here
+        }
+
+        // --- Student Gamification & Save Logic ---
         const todayStr = new Date().toISOString().split('T')[0];
         let lastPlayed = currentUserData.lastPlayed || "";
         let currentStreak = currentUserData.streak || 0;
@@ -937,11 +1033,29 @@ function startQuizPhase() {
         }
         currentUserData.lastPlayed = todayStr;
         currentUserData.streak = currentStreak;
-        potentialXp += streakBonus;
         
-        document.getElementById('quiz-actions').classList.add('hidden');
+        // Calculate Speed Bonus (1 XP for every 1.5 seconds left, max 60 XP)
+        let timeBonus = Math.floor(timeLeft / 1.5);
+        potentialXp += streakBonus + timeBonus;
+        
+        // Add successfully matched words to the masteredWords array
+        let currentMastered = currentUserData.masteredWords || [];
+        dailyWords.forEach(word => {
+          if (!currentMastered.includes(word.term)) {
+            currentMastered.push(word.term);
+          }
+        });
+        currentUserData.masteredWords = currentMastered;
+        
         const footer = document.getElementById('match-complete-footer');
-        footer.querySelector('.xp-earned-text').textContent = `+${potentialXp} XP EARNED${streakBonus ? ' (includes 50 XP Streak Bonus!)' : ''}`;
+        
+        // Dynamically build bonus text message
+        let bonusText = [];
+        if (streakBonus > 0) bonusText.push(`${streakBonus} XP Streak`);
+        if (timeBonus > 0) bonusText.push(`${timeBonus} XP Time`);
+        let bonusString = bonusText.length > 0 ? ` (Includes ${bonusText.join(' & ')} Bonus!)` : '';
+        
+        footer.querySelector('.xp-earned-text').textContent = `+${potentialXp} XP EARNED${bonusString}`;
         footer.classList.remove('hidden');
         
         currentUserData.weeklySetsCompleted = (currentUserData.weeklySetsCompleted || 0) + 1;
@@ -954,7 +1068,8 @@ function startQuizPhase() {
             weeklySetsCompleted: currentUserData.weeklySetsCompleted,
             streak: currentStreak,
             lastPlayed: todayStr,
-            reviewWords: currentUserData.reviewWords || []
+            reviewWords: currentUserData.reviewWords || [],
+            masteredWords: currentUserData.masteredWords
           });
         } catch (error) {
           console.error("Error updating XP:", error);
@@ -1035,10 +1150,6 @@ function startQuizPhase() {
       const draggedTerm = e.dataTransfer.getData('text/plain');
       if (draggedTerm) handleMatch(card, draggedTerm);
     });
-  });
-
-  document.getElementById("back-to-profile-btn-quiz").addEventListener("click", () => {
-    loadDashboard(currentUserData);
   });
 }
 
@@ -1260,6 +1371,23 @@ function renderAdminWeeklyTable() {
 }
 
 async function loadAdminDashboard() {
+  // --- Admin Auto-Logout on Inactivity (15 minutes) ---
+  if (!adminLogoutInitialized) {
+    const resetTimer = () => {
+      clearTimeout(adminInactivityTimer);
+      adminInactivityTimer = setTimeout(() => {
+        alert("Admin session expired due to inactivity. Logging out.");
+        localStorage.removeItem("quartermaster_user");
+        window.location.reload();
+      }, 15 * 60 * 1000); // 15 minutes
+    };
+    ['mousemove', 'keydown', 'scroll', 'touchstart', 'click'].forEach(evt => {
+      document.addEventListener(evt, resetTimer, { passive: true });
+    });
+    resetTimer();
+    adminLogoutInitialized = true;
+  }
+
   authSection.classList.add("hidden");
   if (userMenuWrapper) userMenuWrapper.classList.add("hidden");
   dashboardContent.classList.add("hidden");
@@ -1269,6 +1397,34 @@ async function loadAdminDashboard() {
   document.querySelector(".container").classList.add("admin-mode");
   
   // 1. Fetch Students
+  let adminContainer = document.querySelector("#admin-dashboard-section .grid");
+  if (!adminContainer) adminContainer = document.getElementById("admin-dashboard-section");
+
+  if (adminContainer && !document.getElementById('admin-tools-section')) {
+    const toolsSection = document.createElement('div');
+    toolsSection.id = 'admin-tools-section';
+    toolsSection.className = 'admin-section';
+    toolsSection.innerHTML = `
+      <h3 style="border-bottom: 1px solid #334155; padding-bottom: 10px; margin-bottom: 15px;">Admin Tools</h3>
+      <div style="display: flex; flex-direction: column; gap: 15px;">
+        <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <select id="admin-test-dept-select" style="padding: 10px; border-radius: 8px; background: #1e293b; color: white; border: 1px solid #334155; flex-grow: 1; min-width: 200px;">
+                <option value="DECK">Deck Vocab Test</option>
+                <option value="ENGINE">Engine Vocab Test</option>
+                <option value="LOGISTICS">Logistics Vocab Test</option>
+            </select>
+            <button id="admin-test-vocab-btn" style="flex: 1; min-width: 150px;">Vocab Swipe Test</button>
+            <button id="admin-test-quiz-btn" style="flex: 1; min-width: 150px; background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);">Knowledge Check</button>
+        </div>
+        <button id="admin-reset-vocab-btn" style="background: #c2410c; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; text-align: center;">Reset All Student Vocabulary Progress</button>
+      </div>
+      <p id="admin-action-msg" style="margin-top: 15px; font-size: 12px; text-align: center;"></p>`;
+    if (adminContainer === document.getElementById("admin-dashboard-section")) {
+      adminContainer.appendChild(toolsSection);
+    } else {
+      adminContainer.insertBefore(toolsSection, adminContainer.firstChild);
+    }
+  }
   try {
     const usersSnap = await getDocs(collection(db, "users"));
     let students = [];
@@ -1277,6 +1433,10 @@ async function loadAdminDashboard() {
     });
     currentAdminStudents = students;
     renderAdminStudentsTable();
+
+    document.getElementById('admin-test-vocab-btn').addEventListener('click', startAdminVocabTest);
+    document.getElementById('admin-test-quiz-btn').addEventListener('click', startAdminKnowledgeCheck);
+    document.getElementById('admin-reset-vocab-btn').addEventListener('click', resetAllStudentVocab);
   } catch (err) { console.error("Error fetching students:", err); }
 
   // 2. Fetch Settings
@@ -1458,9 +1618,9 @@ function loadDashboard(userData) {
 
   // Department themes for progress bar
   const deptThemes = {
-    DECK: { icon: "🚢", gradient: "linear-gradient(90deg, #00c6ff, #0072ff)", shadow: "rgba(0, 198, 255, 0.5)" },
-    ENGINE: { icon: "⚙️", gradient: "linear-gradient(90deg, #f97316, #ea580c)", shadow: "rgba(249, 115, 22, 0.5)" },
-    LOGISTICS: { icon: "📦", gradient: "linear-gradient(90deg, #14b8a6, #0d9488)", shadow: "rgba(20, 184, 166, 0.5)" }
+    DECK: { icon: "🚢", gradient: "linear-gradient(90deg, #00c6ff, #0072ff)", shadow: "rgba(0, 198, 255, 0.5)", hex: "#00c6ff" },
+    ENGINE: { icon: "⚙️", gradient: "linear-gradient(90deg, #f97316, #ea580c)", shadow: "rgba(249, 115, 22, 0.5)", hex: "#f97316" },
+    LOGISTICS: { icon: "📦", gradient: "linear-gradient(90deg, #14b8a6, #0d9488)", shadow: "rgba(20, 184, 166, 0.5)", hex: "#14b8a6" }
   };
   const userDept = userData.department ? userData.department.toUpperCase() : "DECK";
   const theme = deptThemes[userDept] || deptThemes.DECK;
@@ -1511,6 +1671,68 @@ function loadDashboard(userData) {
 
   document.getElementById("xp-to-next-label").textContent = xpToNext > 0 ? `${xpToNext} XP to next rank` : "Maximum Rank Achieved";
 
+  // ----------------- MASTERED VOCABULARY SECTION -----------------
+  let masteredSec = document.getElementById("mastered-vocab-section");
+  if (!masteredSec) {
+    masteredSec = document.createElement("div");
+    masteredSec.id = "mastered-vocab-section";
+    masteredSec.style.marginTop = "30px";
+    masteredSec.style.padding = "20px";
+    masteredSec.style.backgroundColor = "rgba(15, 23, 42, 0.6)";
+    masteredSec.style.borderRadius = "16px";
+    masteredSec.style.border = "1px solid #334155";
+    dashboardContent.appendChild(masteredSec);
+  }
+  
+  const masteredWords = userData.masteredWords || [];
+  const renderMasteredCategories = () => {
+    const categorizedMastered = {};
+    masteredWords.forEach(term => {
+      const wordObj = allVocabsList.find(w => w.term === term);
+      const category = wordObj ? wordObj.category : "Uncategorized";
+      if (!categorizedMastered[category]) categorizedMastered[category] = [];
+      categorizedMastered[category].push(term);
+    });
+
+    masteredSec.innerHTML = `
+      <h3 style="color: #cbd5e1; font-size: 18px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">
+        Mastered Vocabulary (${masteredWords.length})
+      </h3>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+        ${Object.keys(categorizedMastered).length > 0 
+          ? Object.keys(categorizedMastered).map(cat => `<button class="mastered-cat-btn" data-category="${cat}" style="background: #1e293b; color: ${theme.hex}; border: 1px solid ${theme.hex}; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; transition: all 0.2s;">${cat} (${categorizedMastered[cat].length})</button>`).join('')
+          : '<p style="color: #64748b; font-size: 14px; font-style: italic;">No words mastered yet. Complete training sets to earn them!</p>'
+        }
+      </div>
+    `;
+
+    masteredSec.querySelectorAll('.mastered-cat-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const cat = e.target.getAttribute('data-category');
+        showCategoryWordsModal(cat, categorizedMastered[cat], userData.department);
+      });
+      btn.addEventListener('mouseover', (e) => { e.target.style.background = theme.hex; e.target.style.color = '#0f172a'; });
+      btn.addEventListener('mouseout', (e) => { e.target.style.background = '#1e293b'; e.target.style.color = theme.hex; });
+    });
+  };
+
+  if (allVocabsList.length === 0) {
+    masteredSec.innerHTML = '<p style="color: #64748b; font-size: 14px; font-style: italic;">Loading vocabulary...</p>';
+    fetch('./maritime_vocab.json')
+      .then(res => res.json())
+      .then(data => {
+        allVocabsList = data;
+        renderMasteredCategories();
+      })
+      .catch(err => {
+        console.error("Failed to load vocab:", err);
+        masteredSec.innerHTML = '<p style="color: #ef4444; font-size: 14px;">Error loading vocabulary.</p>';
+      });
+  } else {
+    renderMasteredCategories();
+  }
+  // ---------------------------------------------------------------
+
   dailyVocabSection.classList.add("hidden");
   gameSection.classList.add("hidden");
 
@@ -1529,6 +1751,292 @@ function loadDashboard(userData) {
   }
   
   loadStudentLeaderboard();
+}
+
+// Pop-up Card Logic for Category Words
+function showCategoryWordsModal(category, words, dept) {
+  let modal = document.getElementById("category-words-modal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "category-words-modal";
+    modal.style.position = "fixed";
+    modal.style.inset = "0";
+    modal.style.backgroundColor = "rgba(10, 25, 47, 0.85)";
+    modal.style.display = "flex";
+    modal.style.alignItems = "center";
+    modal.style.justifyContent = "center";
+    modal.style.zIndex = "9998";
+    modal.style.backdropFilter = "blur(4px)";
+    document.body.appendChild(modal);
+
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.classList.add("hidden");
+    });
+  }
+  modal.classList.remove("hidden");
+
+  const themeConfig = {
+    DECK: { hex: '#00c6ff', shadow: 'rgba(0, 198, 255, 0.4)' },
+    ENGINE: { hex: '#f97316', shadow: 'rgba(249, 115, 22, 0.4)' },
+    LOGISTICS: { hex: '#14b8a6', shadow: 'rgba(20, 184, 166, 0.4)' }
+  };
+  const theme = themeConfig[(dept || 'DECK').toUpperCase()] || themeConfig.DECK;
+
+  modal.innerHTML = `
+    <div style="position: relative; width: 90%; max-width: 450px; box-sizing: border-box; background: #0f172a; border: 2px solid ${theme.hex}; border-radius: 16px; padding: 24px; box-shadow: 0 0 25px ${theme.shadow}; display: flex; flex-direction: column; align-items: center; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+      <h2 style="color: #f8fafc; font-size: 20px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 20px 0; text-align: center;">${category}</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; width: 100%; max-height: 50vh; overflow-y: auto; padding-bottom: 10px;">
+        ${words.map(word => `<button class="category-word-btn" data-term="${word}" style="background: #1e293b; color: #34d399; border: 1px solid #34d399; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; transition: all 0.2s;">${word}</button>`).join('')}
+      </div>
+      <button id="close-category-modal" style="margin-top: 20px; background: rgba(255, 255, 255, 0.05); border: 1px solid #334155; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 24px; cursor: pointer; line-height: 1; transition: background 0.2s; flex-shrink: 0;">&times;</button>
+    </div>
+  `;
+
+  document.getElementById("close-category-modal").addEventListener("click", () => modal.classList.add("hidden"));
+  
+  modal.querySelectorAll('.category-word-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const term = e.target.getAttribute('data-term');
+      showMasteredWordCard(term, dept || 'DECK');
+    });
+    btn.addEventListener('mouseover', (e) => { e.target.style.background = '#34d399'; e.target.style.color = '#0f172a'; });
+    btn.addEventListener('mouseout', (e) => { e.target.style.background = '#1e293b'; e.target.style.color = '#34d399'; });
+  });
+}
+
+// Pop-up Card Logic for Mastered Words
+async function showMasteredWordCard(term, dept) {
+  if (allVocabsList.length === 0) {
+    try {
+      const response = await fetch('./maritime_vocab.json');
+      if (!response.ok) throw new Error("Network response was not ok");
+      allVocabsList = await response.json();
+    } catch (err) {
+      console.error("Error fetching vocab for card:", err);
+      return;
+    }
+  }
+  
+  const wordObj = allVocabsList.find(w => w.term === term);
+  if (!wordObj) return;
+
+  let modal = document.getElementById("mastered-word-modal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "mastered-word-modal";
+    modal.style.position = "fixed";
+    modal.style.inset = "0";
+    modal.style.backgroundColor = "rgba(10, 25, 47, 0.85)";
+    modal.style.display = "flex";
+    modal.style.alignItems = "center";
+    modal.style.justifyContent = "center";
+    modal.style.zIndex = "9999";
+    modal.style.backdropFilter = "blur(4px)";
+    document.body.appendChild(modal);
+
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.classList.add("hidden");
+    });
+  }
+  modal.classList.remove("hidden");
+
+  const themeConfig = {
+    DECK: { hex: '#00c6ff', shadow: 'rgba(0, 198, 255, 0.4)' },
+    ENGINE: { hex: '#f97316', shadow: 'rgba(249, 115, 22, 0.4)' },
+    LOGISTICS: { hex: '#14b8a6', shadow: 'rgba(20, 184, 166, 0.4)' }
+  };
+  const theme = themeConfig[dept.toUpperCase()] || themeConfig.DECK;
+  const wordLevel = wordObj.level || 'Cadet Level';
+  const wordXp = getWordXp(wordLevel);
+
+  if (!document.getElementById('modal-animations')) {
+    const style = document.createElement('style');
+    style.id = 'modal-animations';
+    style.innerHTML = `
+      @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    `;
+    document.head.appendChild(style);
+  }
+
+  modal.innerHTML = `
+    <div id="mastered-card-content" style="position: relative; width: 90%; max-width: 360px; box-sizing: border-box; background: #0f172a; border: 2px solid ${theme.hex}; border-radius: 16px; padding: 24px; box-shadow: 0 0 25px ${theme.shadow}; display: flex; flex-direction: column; align-items: center; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); touch-action: none;">
+      <div style="width: 100%; height: 160px; border-radius: 12px; overflow: hidden; border: 2px solid ${theme.hex}; margin-bottom: 16px; background: #1e293b; box-sizing: border-box; flex-shrink: 0;">
+        <img src="${getRandomCategoryImage(wordObj.category)}" alt="${wordObj.term}" style="width: 100%; height: 100%; object-fit: cover;" draggable="false"/>
+      </div>
+      <h2 style="color: #f8fafc; font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 4px 0; text-align: center;">${wordObj.term}</h2>
+      <span style="color: ${theme.hex}; border: 1px solid ${theme.hex}; padding: 2px 10px; border-radius: 12px; font-size: 10px; font-weight: bold; text-transform: uppercase; margin-bottom: 16px;">${wordObj.category}</span>
+      <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 20px;">
+        <div style="background: #1e293b; color: #cbd5e1; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold;">${wordLevel} • ${wordXp} XP</div>
+        <button class="play-audio-btn-modal" data-term="${wordObj.term}" style="background: none; border: 1px solid ${theme.hex}; color: ${theme.hex}; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s; flex-shrink: 0;">🔊</button>
+      </div>
+      <div style="text-align: center; width: 100%; box-sizing: border-box;">
+        <p style="color: #e2e8f0; font-size: 15px; margin: 0 0 12px 0; line-height: 1.5;">${wordObj.definition}</p>
+        <p style="color: #94a3b8; font-style: italic; font-size: 13px; margin: 0 0 16px 0;">"${wordObj.example}"</p>
+        <div style="background: rgba(0, 0, 0, 0.25); padding: 12px; border-radius: 12px; width: 100%; box-sizing: border-box;">
+          <div style="color: #f59e0b; font-weight: bold; font-size: 15px; margin-bottom: 4px;">${wordObj.thai_translation || ''}</div>
+          <div style="color: #94a3b8; font-size: 12px;">${wordObj.thai_meaning || ''}</div>
+        </div>
+      </div>
+      <button id="close-mastered-modal" style="margin-top: 20px; background: rgba(255, 255, 255, 0.05); border: 1px solid #334155; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 24px; cursor: pointer; line-height: 1; transition: background 0.2s; flex-shrink: 0; z-index: 10;">&times;</button>
+    </div>
+  `;
+
+  document.getElementById("close-mastered-modal").addEventListener("click", () => modal.classList.add("hidden"));
+  const audioBtn = modal.querySelector(".play-audio-btn-modal");
+  audioBtn.addEventListener("mouseover", () => audioBtn.style.background = `rgba(${theme.hex === '#00c6ff' ? '0,198,255' : theme.hex === '#f97316' ? '249,115,22' : '20,184,166'}, 0.2)`);
+  audioBtn.addEventListener("mouseout", () => audioBtn.style.background = 'none');
+  audioBtn.addEventListener("click", () => {
+    const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(term)}`;
+    const audio = new Audio(audioUrl);
+    audio.play().catch(() => {
+      const utterance = new SpeechSynthesisUtterance(term);
+      utterance.lang = 'en-US';
+      window.speechSynthesis.speak(utterance);
+    });
+  });
+
+  // --- Swipe Down to Dismiss Logic ---
+  const cardContent = modal.querySelector("#mastered-card-content");
+  if (!cardContent) return;
+
+  let startY = 0;
+  let currentY = 0;
+  let isDragging = false;
+
+  function dragStart(e) {
+    if (e.target.closest('button')) return; // Ignore drag if interacting with buttons
+
+    isDragging = true;
+    startY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+    cardContent.style.transition = 'transform 0.1s ease-out';
+
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('touchmove', drag, { passive: false });
+    document.addEventListener('mouseup', dragEnd);
+    document.addEventListener('touchend', dragEnd);
+  }
+
+  function drag(e) {
+    if (!isDragging) return;
+    if (e.cancelable) e.preventDefault();
+
+    const y = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+    currentY = y - startY;
+
+    if (currentY > 0) { // Only allow dragging down
+      cardContent.style.transition = 'none';
+      cardContent.style.transform = `translateY(${currentY}px)`;
+      const opacity = Math.max(0, 1 - (currentY / (window.innerHeight / 2)));
+      modal.style.backgroundColor = `rgba(10, 25, 47, ${0.85 * opacity})`;
+    }
+  }
+
+  function dragEnd() {
+    if (!isDragging) return;
+    isDragging = false;
+
+    document.removeEventListener('mousemove', drag);
+    document.removeEventListener('touchmove', drag);
+    document.removeEventListener('mouseup', dragEnd);
+    document.removeEventListener('touchend', dragEnd);
+
+    const threshold = 100; // Must swipe 100px down to dismiss
+    cardContent.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease';
+    modal.style.transition = 'background-color 0.3s ease';
+
+    if (currentY > threshold) {
+      cardContent.style.transform = `translateY(50vh)`;
+      cardContent.style.opacity = '0';
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        // Reset styles for the next time the modal is opened
+        cardContent.style.transform = 'translateY(0px)';
+        cardContent.style.opacity = '1';
+        modal.style.backgroundColor = 'rgba(10, 25, 47, 0.85)';
+      }, 300);
+    } else {
+      cardContent.style.transform = 'translateY(0px)';
+      modal.style.backgroundColor = 'rgba(10, 25, 47, 0.85)';
+    }
+  }
+
+  cardContent.addEventListener('mousedown', dragStart);
+  cardContent.addEventListener('touchstart', dragStart, { passive: true });
+}
+
+async function resetAllStudentVocab() {
+    const msgEl = document.getElementById('admin-action-msg');
+    if (confirm('DANGER: This will reset ALL mastered and review vocabulary for EVERY student. This action cannot be undone. Are you sure?')) {
+        msgEl.textContent = "Resetting in progress...";
+        msgEl.style.color = "#f59e0b";
+        try {
+            const usersSnap = await getDocs(collection(db, "users"));
+            const promises = [];
+            usersSnap.forEach(userDoc => {
+                if (userDoc.data().role === 'student') {
+                    const userRef = doc(db, "users", userDoc.id);
+                    promises.push(updateDoc(userRef, {
+                        masteredWords: [],
+                        reviewWords: [],
+                        weeklySetsCompleted: 0,
+                        weeklyWords: []
+                    }));
+                }
+            });
+            await Promise.all(promises);
+            msgEl.textContent = 'All student vocabulary progress has been successfully reset.';
+            msgEl.style.color = "#10b981";
+        } catch (error) {
+            msgEl.textContent = `Error: ${error.message}`;
+            msgEl.style.color = "#ef4444";
+        }
+    }
+}
+
+async function startAdminVocabTest() {
+    const department = document.getElementById('admin-test-dept-select').value;
+    
+    adminDashboardSection.classList.add("hidden");
+    
+    if (allVocabsList.length === 0) {
+        try {
+            const response = await fetch('./maritime_vocab.json');
+            if (!response.ok) throw new Error("Network response was not ok");
+            allVocabsList = await response.json();
+        } catch (err) {
+            alert("Failed to load vocabulary data.");
+            loadAdminDashboard();
+            return;
+        }
+    }
+    const categories = deptCategories[department.toUpperCase()] || deptCategories.DECK;
+    let filtered = allVocabsList.filter(w => categories.includes(w.category));
+    const shuffled = filtered.sort(() => 0.5 - Math.random());
+    dailyWords = shuffled.slice(0, 3);
+    renderVocabChallenge(true, { department: department });
+}
+
+async function startAdminKnowledgeCheck() {
+    const department = document.getElementById('admin-test-dept-select').value;
+    
+    adminDashboardSection.classList.add("hidden");
+    
+    if (allVocabsList.length === 0) {
+        try {
+            const response = await fetch('./maritime_vocab.json');
+            if (!response.ok) throw new Error("Network response was not ok");
+            allVocabsList = await response.json();
+        } catch (err) {
+            alert("Failed to load vocabulary data.");
+            loadAdminDashboard();
+            return;
+        }
+    }
+    const categories = deptCategories[department.toUpperCase()] || deptCategories.DECK;
+    let filtered = allVocabsList.filter(w => categories.includes(w.category));
+    const shuffled = filtered.sort(() => 0.5 - Math.random());
+    dailyWords = shuffled.slice(0, 3);
+    startQuizPhase(true, { department: department });
 }
 
 // Check if user is already logged in on page load
