@@ -10,7 +10,7 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
-// Import the extensive list of 99 maritime vocabulary words
+// Import the extensive list of 500 maritime vocabulary words
 const maritimeVocab = require('./maritime_vocab.json');
 
 async function seedDatabase() {

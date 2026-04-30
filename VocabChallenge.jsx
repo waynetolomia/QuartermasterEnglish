@@ -5,8 +5,8 @@ import vocabData from '../../maritime_vocab.json';
 // Department mapping to filter vocabulary categories
 const deptCategories = {
   DECK: ["Navigation", "Deck Operations", "Deck Machinery", "Maneuvering", "Ship Dynamics", "Stability", "Weather", "Directions", "Communication", "Safety"],
-  ENGINE: ["Engine Room", "Ship Structure", "Stability"],
-  LOGISTICS: ["Cargo Operations", "Operations", "Ship Spaces"]
+  ENGINE: ["Engine Room", "Ship Structure", "Stability", "Communication"],
+  LOGISTICS: ["Cargo Operations", "Operations", "Ship Spaces", "Communication"]
 };
 
 const tiers = ['I', 'II', 'III'];

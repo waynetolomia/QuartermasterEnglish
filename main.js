@@ -82,12 +82,32 @@ let adminChartInstance = null;
 // Department Mapping Definitions
 const deptCategories = {
   DECK: ["Navigation", "Deck Operations", "Deck Machinery", "Maneuvering", "Ship Dynamics", "Stability", "Weather", "Directions", "Communication", "Safety"],
-  ENGINE: ["Engine Room", "Ship Structure", "Stability"],
-  LOGISTICS: ["Cargo Operations", "Operations", "Ship Spaces"]
+  ENGINE: ["Engine Room", "Ship Structure", "Stability", "Communication"],
+  LOGISTICS: ["Cargo Operations", "Operations", "Ship Spaces", "Communication"]
 };
 
 // Sound Effects Synthesizer (No external assets required)
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+// Function to unlock/resume AudioContext on the first user gesture, crucial for mobile browsers.
+function unlockAudio() {
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume().then(() => {
+      console.log("AudioContext for sound effects has been resumed.");
+      // Playing a silent sound is a common hack to "prime" the audio system on some mobile browsers.
+      const buffer = audioCtx.createBuffer(1, 1, 22050);
+      const source = audioCtx.createBufferSource();
+      source.buffer = buffer;
+      source.connect(audioCtx.destination);
+      source.start(0);
+    }).catch(e => console.error("AudioContext resume failed: ", e));
+  }
+}
+
+// Attach the unlocker to run once on the first user interaction.
+document.body.addEventListener('click', unlockAudio, { once: true });
+document.body.addEventListener('touchstart', unlockAudio, { once: true });
+
 function playSound(type) {
   if (audioCtx.state === 'suspended') audioCtx.resume();
   const osc = audioCtx.createOscillator();
@@ -181,79 +201,79 @@ function getRandomCategoryImage(category) {
   // Replace with your actual image paths
   const categoryImages = {
     "Navigation": [
-      "./assets/images/navigation_1.jpg",
-      "./assets/images/navigation_2.jpg",
-      "./assets/images/navigation_3.jpg"
+      "./assets/images/navigation_1.png",
+      "./assets/images/navigation_2.png",
+      "./assets/images/navigation_3.png"
     ],
     "Deck Operations": [
-      "./assets/images/deck_operations_1.jpg",
-      "./assets/images/deck_operations_2.jpg",
-      "./assets/images/deck_operations_3.jpg"
+      "./assets/images/deck_operations_1.png",
+      "./assets/images/deck_operations_2.png",
+      "./assets/images/deck_operations_3.png"
     ],
     "Deck Machinery": [
-      "./assets/images/deck_machinery_1.jpg",
-      "./assets/images/deck_machinery_2.jpg",
-      "./assets/images/deck_machinery_3.jpg"
+      "./assets/images/deck_machinery_1.png",
+      "./assets/images/deck_machinery_2.png",
+      "./assets/images/deck_machinery_3.png"
     ],
     "Maneuvering": [
-      "./assets/images/maneuvering_1.jpg",
-      "./assets/images/maneuvering_2.jpg",
-      "./assets/images/maneuvering_3.jpg"
+      "./assets/images/maneuvering_1.png",
+      "./assets/images/maneuvering_2.png",
+      "./assets/images/maneuvering_3.png"
     ],
     "Ship Dynamics": [
-      "./assets/images/ship_dynamics_1.jpg",
-      "./assets/images/ship_dynamics_2.jpg",
-      "./assets/images/ship_dynamics_3.jpg"
+      "./assets/images/ship_dynamics_1.png",
+      "./assets/images/ship_dynamics_2.png",
+      "./assets/images/ship_dynamics_3.png"
     ],
     "Stability": [
-      "./assets/images/stability_1.jpg",
-      "./assets/images/stability_2.jpg",
-      "./assets/images/stability_3.jpg"
+      "./assets/images/stability_1.png",
+      "./assets/images/stability_2.png",
+      "./assets/images/stability_3.png"
     ],
     "Weather": [
-      "./assets/images/weather_1.jpg",
-      "./assets/images/weather_2.jpg",
-      "./assets/images/weather_3.jpg"
+      "./assets/images/weather_1.png",
+      "./assets/images/weather_2.png",
+      "./assets/images/weather_3.png"
     ],
     "Directions": [
-      "./assets/images/directions_1.jpg",
-      "./assets/images/directions_2.jpg",
-      "./assets/images/directions_3.jpg"
+      "./assets/images/directions_1.png",
+      "./assets/images/directions_2.png",
+      "./assets/images/directions_3.png"
     ],
     "Communication": [
-      "./assets/images/communication_1.jpg",
-      "./assets/images/communication_2.jpg",
-      "./assets/images/communication_3.jpg"
+      "./assets/images/communication_1.png",
+      "./assets/images/communication_2.png",
+      "./assets/images/communication_3.png"
     ],
     "Safety": [
-      "./assets/images/safety_1.jpg",
-      "./assets/images/safety_2.jpg",
-      "./assets/images/safety_3.jpg"
+      "./assets/images/safety_1.png",
+      "./assets/images/safety_2.png",
+      "./assets/images/safety_3.png"
     ],
     "Engine Room": [
-      "./assets/images/engine_room_1.jpg",
-      "./assets/images/engine_room_2.jpg",
-      "./assets/images/engine_room_3.jpg"
+      "./assets/images/engine_room_1.png",
+      "./assets/images/engine_room_2.png",
+      "./assets/images/engine_room_3.png"
     ],
     "Ship Structure": [
-      "./assets/images/ship_structure_1.jpg",
-      "./assets/images/ship_structure_2.jpg",
-      "./assets/images/ship_structure_3.jpg"
+      "./assets/images/ship_structure_1.png",
+      "./assets/images/ship_structure_2.png",
+      "./assets/images/ship_structure_3.png"
     ],
     "Cargo Operations": [
-      "./assets/images/cargo_operations_1.jpg",
-      "./assets/images/cargo_operations_2.jpg",
-      "./assets/images/cargo_operations_3.jpg"
+      "./assets/images/cargo_operations_1.png",
+      "./assets/images/cargo_operations_2.png",
+      "./assets/images/cargo_operations_3.png"
     ],
     "Operations": [
-      "./assets/images/operations_1.jpg",
-      "./assets/images/operations_2.jpg",
-      "./assets/images/operations_3.jpg"
+      "./assets/images/operations_1.png",
+      "./assets/images/operations_2.png",
+      "./assets/images/operations_3.png"
     ],
     "Ship Spaces": [
-      "./assets/images/ship_spaces_1.jpg",
-      "./assets/images/ship_spaces_2.jpg",
-      "./assets/images/ship_spaces_3.jpg"
+      "./assets/images/ship_spaces_1.png",
+      "./assets/images/ship_spaces_2.png",
+      "./assets/images/ship_spaces_3.png"
     ]
   };
 
@@ -1419,6 +1439,7 @@ function loadDashboard(userData) {
 
   document.getElementById("user-department").textContent = userData.department || "DECK";
   document.getElementById("user-rank").textContent = userData.rank || "Deckhand";
+  document.getElementById("user-rank").style.color = getRankColor(userData.rank || "Deckhand");
   document.getElementById("user-streak").textContent = `${userData.streak || 0} Days`;
   document.getElementById("user-xp").textContent = userData.xp || 0;
   

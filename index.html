@@ -74,41 +74,42 @@
     <!-- Dashboard Content Wrapper (hides during challenges) -->
     <div id="dashboard-content" class="hidden">
       <div id="dashboard-header">
-        <div id="welcome-container" style="margin-bottom: 20px; text-align: left;">
-          <h2 style="margin: 0; text-align: left;">Welcome Aboard,<br><span id="user-name" class="user-name-text"></span></h2>
+        <div id="welcome-container" class="welcome-panel">
+          <div class="welcome-text">Welcome Aboard</div>
+          <div id="user-name" class="user-name-text"></div>
         </div>
 
         <div id="stats-container" class="stats-container">
           <div>
             <p>Dept</p>
-            <strong id="user-department" class="role-badge">...</strong>
+            <strong id="user-department">...</strong>
           </div>
           <div>
             <p>Rank</p>
-            <strong id="user-rank" class="role-badge">Deckhand</strong>
+            <strong id="user-rank">Deckhand</strong>
           </div>
           <div>
             <p>Streak</p>
-            <strong id="user-streak" class="role-badge">0 Days</strong>
+            <strong id="user-streak">0 Days</strong>
           </div>
           <div>
             <p>XP</p>
-            <strong id="user-xp" class="role-badge">0</strong>
+            <strong id="user-xp">0</strong>
           </div>
         </div>
         
         <!-- XP Progress Bar -->
-        <div id="xp-progress-container" style="background: #0f172a; border-radius: 12px; border: 1px solid #334155; padding: 15px; margin-bottom: 20px;">
-          <div style="display: flex; justify-content: space-between; font-size: 12px; color: #94a3b8; margin-bottom: 8px;">
-            <span>Current: <strong id="current-rank-label" style="color: #cbd5e1;">...</strong></span>
-            <span>Next: <strong id="next-rank-label" style="color: #cbd5e1;">...</strong></span>
+        <div id="xp-progress-container" class="progress-panel">
+          <div class="progress-header">
+            <span>Current: <strong id="current-rank-label">...</strong></span>
+            <span>Next: <strong id="next-rank-label">...</strong></span>
           </div>
-          <div style="width: 100%; background: #1e293b; border-radius: 8px; height: 14px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); position: relative; margin-top: 12px; margin-bottom: 8px;">
-            <div id="rank-progress-fill" style="height: 100%; width: 0%; background: linear-gradient(90deg, #00c6ff, #0072ff); transition: width 0.5s ease-out; box-shadow: 0 0 10px rgba(0,198,255,0.5); border-radius: 8px; position: relative;">
-              <div id="rank-progress-icon" class="bobbing-icon" style="position: absolute; right: -10px; top: -6px; font-size: 16px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); z-index: 10; transition: transform 0.3s ease;">🚢</div>
+          <div class="progress-track">
+            <div id="rank-progress-fill" class="progress-fill">
+              <div id="rank-progress-icon" class="progress-icon bobbing-icon">🚢</div>
             </div>
           </div>
-          <div style="text-align: center; font-size: 11px; color: #64748b; margin-top: 8px;" id="xp-to-next-label">... XP to next rank</div>
+          <div class="progress-footer" id="xp-to-next-label">... XP to next rank</div>
         </div>
       </div>
       
@@ -118,8 +119,8 @@
         <button id="start-daily-btn">Start Daily 3</button>
       </div>
       
-      <div id="student-leaderboard-section" class="admin-section" style="margin-top: 30px; text-align: left;">
-        <h3 style="text-align: center; border-bottom: none; padding-bottom: 0; margin-bottom: 15px;">Crew Rankings</h3>
+      <div id="student-leaderboard-section" class="leaderboard-panel">
+        <h3>Crew Rankings</h3>
         <div class="table-container" style="max-height: 200px;">
           <table id="student-leaderboard-table">
             <thead><tr><th>Pos</th><th>Name</th><th>Rank</th><th>Dept</th><th>XP</th></tr></thead>

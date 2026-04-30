@@ -1,0 +1,15 @@
+{
+  "name": "quartermaster-log-assets",
+  "version": "1.0.0",
+  "description": "Asset generation scripts for The Quartermaster's Log application.",
+  "main": "main.js",
+  "scripts": {
+    "generate-images": "node generate_images.js",
+    "expand-vocab": "node expand_vocab.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}
