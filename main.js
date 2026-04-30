@@ -967,8 +967,10 @@ function startQuizPhase(isAdmin = false, user = currentUserData) {
     if (term === targetTerm) {
       playSound('match');
       // SRS: Remove correctly matched term from review list
-      if (currentUserData.reviewWords) {
-        currentUserData.reviewWords = currentUserData.reviewWords.filter(w => w !== term);
+      if (!isAdmin) {
+        if (currentUserData.reviewWords) {
+          currentUserData.reviewWords = currentUserData.reviewWords.filter(w => w !== term);
+        }
       }
       // Correct Match
       card.classList.add('matched');
@@ -1082,12 +1084,14 @@ function startQuizPhase(isAdmin = false, user = currentUserData) {
     } else {
       playSound('error');
       // SRS: Add to review words when matched incorrectly
-      if (!currentUserData.reviewWords) currentUserData.reviewWords = [];
-      if (!currentUserData.reviewWords.includes(targetTerm)) currentUserData.reviewWords.push(targetTerm);
-      
+      if (!isAdmin) {
+        if (!currentUserData.reviewWords) currentUserData.reviewWords = [];
+        if (!currentUserData.reviewWords.includes(targetTerm)) currentUserData.reviewWords.push(targetTerm);
+      }
+
       // Wrong Match Penalty
       potentialXp = Math.max(0, potentialXp - 5);
-      
+
       card.style.borderColor = '#ef4444';
       card.style.background = 'rgba(239, 68, 68, 0.1)';
       card.style.transform = 'translateX(10px)';
